@@ -151,7 +151,7 @@ export default function HomeScreen() {
           className="w-[85%] h-[50px] bg-[#265D5A] rounded-full items-center justify-center shadow-md"
           onPress={handleStartGame}
         >
-          <Text className="text-white text-base text-[18px] font-bold font-[Nunito]">
+          <Text className="text-white text-[18px] font-bold font-[Nunito]">
             Start New Game
           </Text>
         </TouchableOpacity>
