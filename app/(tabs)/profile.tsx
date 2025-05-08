@@ -131,7 +131,7 @@ const styles = StyleSheet.create({
   },
   giftBox: {
     width: "100%",
-    height: 180,
+    aspectRatio: 12 / 8,
     borderWidth: 1.5,
     borderColor: "#aaa",
     borderRadius: 16,

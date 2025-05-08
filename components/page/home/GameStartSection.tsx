@@ -35,6 +35,7 @@ export default function GameStartSection({
       <TouchableOpacity
         className="w-[85%] h-[50px] bg-[#265D5A] rounded-full items-center justify-center shadow-md"
         onPress={onStart}
+        activeOpacity={0.8}
       >
         <Text className="text-white text-[18px] font-bold font-nunito">
           Start New Game

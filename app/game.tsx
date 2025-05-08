@@ -345,6 +345,7 @@ export default function GameScreen() {
 
   return (
     <View style={styles.container}>
+      <View className="w-full  h-[8%]" />
       <View style={styles.headerRow}>
         <Text style={styles.headerText}>
           🔥 {difficultyLabel.toString().toUpperCase()}
@@ -402,7 +403,11 @@ export default function GameScreen() {
           </View>
           <NumberPad onSelectNumber={handleNumberSelect} />
           <View style={styles.fabRow}>
-            <TouchableOpacity style={styles.fab} onPress={handleSubmit}>
+            <TouchableOpacity
+              style={styles.fab}
+              onPress={handleSubmit}
+              activeOpacity={0.9}
+            >
               <Text style={styles.fabText}>Mustache!</Text>
             </TouchableOpacity>
             <TouchableOpacity
@@ -437,12 +442,16 @@ export default function GameScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, padding: 16, backgroundColor: "#FDF7E7" },
+  container: {
+    flex: 1,
+    padding: 16,
+    backgroundColor: "#FDF7E7",
+    justifyContent: "flex-start",
+  },
   headerRow: {
     flexDirection: "row",
     justifyContent: "space-between",
     marginBottom: 3,
-    marginTop: 45,
   },
   headerText: { fontSize: 16, color: "#444" },
   topBar: {
@@ -472,7 +481,7 @@ const styles = StyleSheet.create({
   fab: {
     width: "82%",
     backgroundColor: "#265D5A",
-    height: 50,
+    height: 52,
     borderRadius: 30,
     alignItems: "center",
     justifyContent: "center",
@@ -484,7 +493,7 @@ const styles = StyleSheet.create({
   },
   fabText: {
     color: "#fff",
-    fontSize: 18,
+    fontSize: 20,
     fontWeight: "bold",
     fontFamily: "Nunito",
   },

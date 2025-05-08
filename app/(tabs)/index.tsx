@@ -107,7 +107,7 @@ export default function HomeScreen() {
           resizeMode="contain"
         />
       </View>
-      <View className="w-full h-[29%] pl-4">
+      <View className="w-full h-[29%] pl-4 ">
         <ScrollView
           horizontal
           showsHorizontalScrollIndicator={false}
@@ -116,7 +116,7 @@ export default function HomeScreen() {
           {cardImages.map((img, index) => (
             <View
               key={index}
-              className="w-[200px] h-full rounded-xl mr-3 overflow-hidden"
+              className="w-[210px] h-full rounded-xl mr-3 overflow-hidden"
             >
               <ImageBackground
                 source={img}
@@ -130,16 +130,17 @@ export default function HomeScreen() {
       <View className="w-full h-[30%] flex items-center justify-center ">
         <Image
           source={require("../../assets/images/mr_sudoku.png")}
-          className="w-[300px] h-[100px] mb-[10px]"
+          className="w-[85%] h-[120px] "
           resizeMode="contain"
         />
       </View>
 
-      <View className="w-full h-[30%] flex pt-[50px] justify-start items-center bottom-5">
+      <View className="w-full h-[22%] flex justify-end items-center pb-[30px] ">
         {savedTime !== null && (
           <TouchableOpacity
             style={styles.continueButton}
             onPress={handleContinueGame}
+            activeOpacity={0.9}
           >
             <Text style={styles.continueText}>
               Continue Game ({formatTime(savedTime)})
@@ -148,14 +149,16 @@ export default function HomeScreen() {
         )}
 
         <TouchableOpacity
-          className="w-[85%] h-[50px] bg-[#265D5A] rounded-full items-center justify-center shadow-md"
+          className="w-[85%] h-[30%] bg-[#265D5A] rounded-full items-center justify-center shadow-md"
           onPress={handleStartGame}
+          activeOpacity={0.9}
         >
           <Text className="text-white text-[18px] font-bold font-[Nunito]">
             Start New Game
           </Text>
         </TouchableOpacity>
       </View>
+      <View className="w-full h-[8%] bg-slate-500" />
 
       <Modal
         visible={modalVisible}
@@ -226,9 +229,9 @@ const styles = StyleSheet.create({
   },
   difficultyButton: {
     backgroundColor: "#265D5A",
-    paddingVertical: 12,
+    paddingVertical: 14,
     paddingHorizontal: 30,
-    borderRadius: 30,
+    borderRadius: 35,
     marginVertical: 8,
     width: "90%",
     alignItems: "center",
@@ -258,7 +261,7 @@ const styles = StyleSheet.create({
   },
   continueButton: {
     width: "85%",
-    height: 50,
+    height: "30%",
     backgroundColor: "#4E4E4E",
     borderRadius: 30,
     alignItems: "center",
