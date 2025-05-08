@@ -50,7 +50,7 @@ export default function SudokuBoard({
         }),
       ]).start();
     }
-  }, [mistakeCells]);
+  }, [mistakeCells, shakeAnim]);
 
   return (
     <Animated.View

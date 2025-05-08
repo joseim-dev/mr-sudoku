@@ -11,10 +11,15 @@ import { StatusBar } from "expo-status-bar";
 
 import "@/global.css";
 import { useColorScheme } from "@/hooks/useColorScheme";
-import { Image } from "react-native"; // ✅ 이미지 컴포넌트 import
+import { Image } from "react-native"; 
+
 
 export default function RootLayout() {
   const colorScheme = useColorScheme();
+  
+
+
+
   const [loaded] = useFonts({
     SpaceMono: require("../assets/fonts/SpaceMono-Regular.ttf"),
     Nunito: require("../assets/fonts/Nunito-VariableFont_wght.ttf"),

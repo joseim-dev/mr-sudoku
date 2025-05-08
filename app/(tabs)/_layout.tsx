@@ -1,12 +1,35 @@
 import { Tabs } from "expo-router";
-import React from "react";
+import React, { useEffect } from "react";
 import { Platform } from "react-native";
 
 import { IconSymbol } from "@/components/ui/IconSymbol";
 import { Ionicons } from "@expo/vector-icons";
+import {
+  getTrackingPermissionsAsync,
+  PermissionStatus,
+  requestTrackingPermissionsAsync,
+} from "expo-tracking-transparency";
+import mobileAds from "react-native-google-mobile-ads";
 
 export default function TabLayout() {
   // const colorScheme = useColorScheme();
+
+  useEffect(() => {
+    const init = async () => {
+      const { status } = await getTrackingPermissionsAsync();
+      if (status === PermissionStatus.UNDETERMINED) {
+        await requestTrackingPermissionsAsync();
+      }
+
+      mobileAds()
+        .initialize()
+        .then(() => {
+          // Initialization complete!
+        });
+    };
+
+    init();
+  }, []);
 
   return (
     <Tabs
