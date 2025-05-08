@@ -4,6 +4,7 @@ import { useRouter } from "expo-router";
 import React, { useEffect, useState } from "react";
 import {
   Alert,
+  Dimensions,
   StyleSheet,
   Text,
   TouchableOpacity,
@@ -19,6 +20,8 @@ import { generatePuzzle, Grid, solveSudoku } from "../lib/sudoku";
 export default function GameScreen() {
   const router = useRouter();
   const [showConfetti, setShowConfetti] = useState(false);
+  const [history, setHistory] = useState<Grid[]>([]);
+
   const [difficultyLabel, setDifficultyLabel] = useState("");
   const [grid, setGrid] = useState<Grid>([]);
   const [solutionGrid, setSolutionGrid] = useState<Grid>([]);
@@ -40,20 +43,12 @@ export default function GameScreen() {
   );
   const [time, setTime] = useState(0);
   const handleUndo = () => {
-    const newGrid = grid.map((row, rowIndex) =>
-      row.map((cell, colIndex) =>
-        initialGrid[rowIndex][colIndex] === null ? null : cell
-      )
-    );
-    setGrid(newGrid);
-
-    // 메모와 실수 표시도 초기화
-    setMistakeCells([]);
-    setMemoGrid(
-      Array(9)
-        .fill(null)
-        .map(() => Array(9).fill([]))
-    );
+    setHistory((prev) => {
+      if (prev.length === 0) return prev;
+      const prevGrid = prev[prev.length - 1];
+      setGrid(prevGrid);
+      return prev.slice(0, -1);
+    });
   };
 
   useEffect(() => {
@@ -170,6 +165,8 @@ export default function GameScreen() {
     const newGrid = grid.map((r, i) =>
       r.map((cell, j) => (i === row && j === col ? num : cell))
     );
+    setHistory((prev) => [...prev, grid.map((r) => [...r])]);
+
     setGrid(newGrid);
   };
 
@@ -345,7 +342,7 @@ export default function GameScreen() {
 
   return (
     <View style={styles.container}>
-      <View className="w-full  h-[8%]" />
+      <View className="w-full  h-[4%]" />
       <View style={styles.headerRow}>
         <Text style={styles.headerText}>
           🔥 {difficultyLabel.toString().toUpperCase()}
@@ -441,6 +438,9 @@ export default function GameScreen() {
   );
 }
 
+const screenHeight = Dimensions.get("window").height;
+const isSmallDevice = screenHeight < 700; // iPhone SE 등
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -457,9 +457,11 @@ const styles = StyleSheet.create({
   topBar: {
     flexDirection: "row",
     justifyContent: "space-around",
-    marginTop: 20,
+    marginTop: isSmallDevice ? 4 : 20,
+    marginBottom: isSmallDevice ? 8 : 40, // 추가된 부분
     alignItems: "center",
   },
+
   iconButton: {
     alignItems: "center",
   },
@@ -470,18 +472,18 @@ const styles = StyleSheet.create({
   },
   fabRow: {
     position: "absolute",
-    bottom: 28,
+    bottom: isSmallDevice ? 10 : 28,
     left: 16,
     right: 16,
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    height: 60,
+    height: isSmallDevice ? 50 : 60,
   },
   fab: {
     width: "82%",
     backgroundColor: "#265D5A",
-    height: 52,
+    height: isSmallDevice ? 40 : 50,
     borderRadius: 30,
     alignItems: "center",
     justifyContent: "center",
@@ -493,13 +495,13 @@ const styles = StyleSheet.create({
   },
   fabText: {
     color: "#fff",
-    fontSize: 20,
+    fontSize: isSmallDevice ? 16 : 18,
     fontWeight: "bold",
     fontFamily: "Nunito",
   },
   exitButton: {
-    width: 50,
-    height: 50,
+    width: isSmallDevice ? 45 : 50,
+    height: isSmallDevice ? 45 : 50,
     borderRadius: 100,
     borderWidth: 2,
     borderColor: "#F28B82",

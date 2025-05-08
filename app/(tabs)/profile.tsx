@@ -84,6 +84,8 @@ export default function SettingsScreen() {
         >
           <Text style={styles.redeemButtonText}>Redeem</Text>
         </TouchableOpacity>
+
+        <View className="w-full h-[50px]"></View>
       </ScrollView>
     </SafeAreaView>
   );

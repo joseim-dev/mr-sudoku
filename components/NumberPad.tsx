@@ -27,7 +27,7 @@ export default function NumberPad({ onSelectNumber }: NumberPadProps) {
 }
 
 const styles = StyleSheet.create({
-  container: { marginTop: 40, width: "100%" },
+  container: { width: "100%" },
   row: {
     flexDirection: "row",
     flexWrap: "wrap",

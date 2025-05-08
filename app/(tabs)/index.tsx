@@ -4,6 +4,7 @@ import { useRouter } from "expo-router";
 import React, { useCallback, useState } from "react";
 
 import {
+  Dimensions,
   Image,
   ImageBackground,
   Modal,
@@ -15,6 +16,8 @@ import {
 } from "react-native";
 
 export default function HomeScreen() {
+  const screenHeight = Dimensions.get("window").height;
+  const isSmallDevice = screenHeight < 700; // 기준은 필요에 따라 조절
   const router = useRouter();
   const [modalVisible, setModalVisible] = useState(false);
   const [savedTime, setSavedTime] = useState<number | null>(null);
@@ -107,35 +110,49 @@ export default function HomeScreen() {
           resizeMode="contain"
         />
       </View>
-      <View className="w-full h-[29%] pl-4 ">
-        <ScrollView
-          horizontal
-          showsHorizontalScrollIndicator={false}
-          contentContainerStyle={{ paddingHorizontal: 10 }}
-        >
-          {cardImages.map((img, index) => (
-            <View
-              key={index}
-              className="w-[210px] h-full rounded-xl mr-3 overflow-hidden"
-            >
-              <ImageBackground
-                source={img}
-                style={{ width: "100%", height: "100%" }}
-                resizeMode="contain"
-              />
-            </View>
-          ))}
-        </ScrollView>
+      <View className="w-full h-[29%] pl-4">
+        {isSmallDevice ? (
+          <View className="w-full h-full justify-end items-center">
+            <Image
+              source={require("../../assets/images/mr_sudoku.png")}
+              className="w-[85%] h-[100px]"
+              resizeMode="contain"
+            />
+          </View>
+        ) : (
+          <ScrollView
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            contentContainerStyle={{ paddingHorizontal: 10 }}
+          >
+            {cardImages.map((img, index) => (
+              <View
+                key={index}
+                className="w-[210px] h-full rounded-xl mr-4 overflow-hidden"
+              >
+                <Image
+                  source={img}
+                  style={{ width: "100%", height: "100%" }}
+                  resizeMode="contain"
+                />
+              </View>
+            ))}
+          </ScrollView>
+        )}
       </View>
-      <View className="w-full h-[30%] flex items-center justify-center ">
-        <Image
-          source={require("../../assets/images/mr_sudoku.png")}
-          className="w-[85%] h-[120px] "
-          resizeMode="contain"
-        />
-      </View>
+      {isSmallDevice ? (
+        <View className="w-full h-[30%] flex items-center justify-center "></View>
+      ) : (
+        <View className="w-full h-[30%] flex items-center justify-center ">
+          <Image
+            source={require("../../assets/images/mr_sudoku.png")}
+            className="w-[85%] h-[120px] "
+            resizeMode="contain"
+          />
+        </View>
+      )}
 
-      <View className="w-full h-[22%] flex justify-end items-center pb-[30px] ">
+      <View className="w-full h-[22%] flex justify-end items-center pb-[40px] ">
         {savedTime !== null && (
           <TouchableOpacity
             style={styles.continueButton}
@@ -149,7 +166,7 @@ export default function HomeScreen() {
         )}
 
         <TouchableOpacity
-          className="w-[85%] h-[30%] bg-[#265D5A] rounded-full items-center justify-center shadow-md"
+          className="w-[85%] h-[50px] bg-[#265D5A] rounded-full items-center justify-center shadow-md"
           onPress={handleStartGame}
           activeOpacity={0.9}
         >
@@ -158,7 +175,7 @@ export default function HomeScreen() {
           </Text>
         </TouchableOpacity>
       </View>
-      <View className="w-full h-[8%] bg-slate-500" />
+      <View className="w-full h-[8%] " />
 
       <Modal
         visible={modalVisible}
@@ -261,7 +278,7 @@ const styles = StyleSheet.create({
   },
   continueButton: {
     width: "85%",
-    height: "30%",
+    height: 50,
     backgroundColor: "#4E4E4E",
     borderRadius: 30,
     alignItems: "center",

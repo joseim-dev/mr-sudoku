@@ -11,14 +11,10 @@ import { StatusBar } from "expo-status-bar";
 
 import "@/global.css";
 import { useColorScheme } from "@/hooks/useColorScheme";
-import { Image } from "react-native"; 
-
+import { Image } from "react-native";
 
 export default function RootLayout() {
   const colorScheme = useColorScheme();
-  
-
-
 
   const [loaded] = useFonts({
     SpaceMono: require("../assets/fonts/SpaceMono-Regular.ttf"),
@@ -44,7 +40,7 @@ export default function RootLayout() {
             headerTitle: () => (
               <Image
                 source={require("../assets/images/mr_sudoku.png")}
-                style={{ width: 180, height: 40, resizeMode: "contain" }}
+                style={{ width: 160, height: 40, resizeMode: "contain" }}
               />
             ),
             headerLeft: () => null, // ← 🔥 완전히 제거!
