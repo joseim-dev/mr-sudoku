@@ -1,75 +1,274 @@
-import { Image } from 'expo-image';
-import { Platform, StyleSheet } from 'react-native';
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useFocusEffect } from "@react-navigation/native";
+import { useRouter } from "expo-router";
+import React, { useCallback, useState } from "react";
 
-import { HelloWave } from '@/components/HelloWave';
-import ParallaxScrollView from '@/components/ParallaxScrollView';
-import { ThemedText } from '@/components/ThemedText';
-import { ThemedView } from '@/components/ThemedView';
+import {
+  Image,
+  ImageBackground,
+  Modal,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
 
 export default function HomeScreen() {
+  const router = useRouter();
+  const [modalVisible, setModalVisible] = useState(false);
+  const [savedTime, setSavedTime] = useState<number | null>(null);
+  const [userExp, setUserExp] = useState(0);
+
+  const levelRequirements: Record<string, number> = {
+    easy: 0,
+    normal: 0,
+    medium: 100,
+    hard: 300,
+    extreme: 600,
+    master: 1000,
+  };
+
+  const difficulties = [
+    { key: "easy", label: "EASY", base: "easy" },
+    { key: "normal", label: "NORMAL", base: "easy" },
+    { key: "medium", label: "MEDIUM", base: "medium" },
+    { key: "hard", label: "HARD", base: "medium" },
+    { key: "extreme", label: "EXTREME", base: "hard" },
+    { key: "master", label: "MASTER", base: "hard" },
+  ];
+
+  useFocusEffect(
+    useCallback(() => {
+      const checkSavedGame = async () => {
+        const saved = await AsyncStorage.getItem("sudokuSavedGame");
+        if (saved) {
+          const parsed = JSON.parse(saved);
+          setSavedTime(parsed.time);
+        } else {
+          setSavedTime(null);
+        }
+
+        const exp = await AsyncStorage.getItem("userExp");
+        setUserExp(parseInt(exp || "0", 10));
+      };
+
+      checkSavedGame();
+    }, [])
+  );
+
+  const handleStartGame = () => {
+    setModalVisible(true);
+  };
+
+  const handleContinueGame = () => {
+    router.push("/game");
+  };
+
+  const handleSelectDifficulty = async (key: string, base: string) => {
+    await AsyncStorage.multiRemove([
+      "sudokuGrid",
+      "sudokuInitialGrid",
+      "sudokuSolutionGrid",
+      "sudokuTime",
+      "sudokuDifficulty",
+      "sudokuDifficultyLabel",
+      "sudokuSavedGame",
+    ]);
+    await AsyncStorage.setItem("sudokuDifficulty", base);
+    await AsyncStorage.setItem("sudokuDifficultyLabel", key);
+    setModalVisible(false);
+    router.push("/game");
+  };
+
+  const cardImages = [
+    require("../../assets/images/home-card-1.png"),
+    require("../../assets/images/home-card-2.png"),
+    require("../../assets/images/home-card-3.png"),
+    require("../../assets/images/home-card-4.png"),
+  ];
+
+  const formatTime = (seconds: number): string => {
+    const m = Math.floor(seconds / 60);
+    const s = seconds % 60;
+    return `${String(m).padStart(2, "0")}:${String(s).padStart(2, "0")}`;
+  };
+
   return (
-    <ParallaxScrollView
-      headerBackgroundColor={{ light: '#A1CEDC', dark: '#1D3D47' }}
-      headerImage={
-        <Image
-          source={require('@/assets/images/partial-react-logo.png')}
-          style={styles.reactLogo}
+    <View className="flex-1 bg-[#FDF6E5] justify-start items-center ">
+      <View className="h-[11%] w-full flex justify-end items-center pb-4">
+        {/* <Image
+          source={require("../assets/images/icon.png")}
+          style={{ width: 180, height: 40, resizeMode: "contain" }}
+        /> */}
+        <ImageBackground
+          source={require("@/assets/images/mustache.png")}
+          style={{ width: 30, height: 30 }}
+          resizeMode="contain"
         />
-      }>
-      <ThemedView style={styles.titleContainer}>
-        <ThemedText type="title">Welcome!</ThemedText>
-        <HelloWave />
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 1: Try it</ThemedText>
-        <ThemedText>
-          Edit <ThemedText type="defaultSemiBold">app/(tabs)/index.tsx</ThemedText> to see changes.
-          Press{' '}
-          <ThemedText type="defaultSemiBold">
-            {Platform.select({
-              ios: 'cmd + d',
-              android: 'cmd + m',
-              web: 'F12',
+      </View>
+      <View className="w-full h-[29%] pl-4">
+        <ScrollView
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          contentContainerStyle={{ paddingHorizontal: 10 }}
+        >
+          {cardImages.map((img, index) => (
+            <View
+              key={index}
+              className="w-[200px] h-full rounded-xl mr-3 overflow-hidden"
+            >
+              <ImageBackground
+                source={img}
+                style={{ width: "100%", height: "100%" }}
+                resizeMode="contain"
+              />
+            </View>
+          ))}
+        </ScrollView>
+      </View>
+      <View className="w-full h-[30%] flex items-center justify-center ">
+        <Image
+          source={require("../../assets/images/mr_sudoku.png")}
+          className="w-[300px] h-[100px] mb-[10px]"
+          resizeMode="contain"
+        />
+      </View>
+
+      <View className="w-full h-[30%] flex pt-[50px] justify-start items-center bottom-5">
+        {savedTime !== null && (
+          <TouchableOpacity
+            style={styles.continueButton}
+            onPress={handleContinueGame}
+          >
+            <Text style={styles.continueText}>
+              Continue Game ({formatTime(savedTime)})
+            </Text>
+          </TouchableOpacity>
+        )}
+
+        <TouchableOpacity
+          className="w-[85%] h-[50px] bg-[#265D5A] rounded-full items-center justify-center shadow-md"
+          onPress={handleStartGame}
+        >
+          <Text className="text-white text-base text-[18px] font-bold font-[Nunito]">
+            Start New Game
+          </Text>
+        </TouchableOpacity>
+      </View>
+
+      <Modal
+        visible={modalVisible}
+        transparent
+        animationType="fade"
+        onRequestClose={() => setModalVisible(false)}
+      >
+        <View style={styles.modalBackdrop}>
+          <View style={styles.modalContainer}>
+            <Text style={styles.modalTitle}>Select Difficulty</Text>
+
+            {difficulties.map((level) => {
+              const requiredExp = levelRequirements[level.key];
+              const locked = userExp < requiredExp;
+
+              return (
+                <TouchableOpacity
+                  key={level.key}
+                  style={[
+                    styles.difficultyButton,
+                    locked && styles.disabledButton,
+                  ]}
+                  disabled={locked}
+                  onPress={() => handleSelectDifficulty(level.key, level.base)}
+                >
+                  <Text
+                    style={[
+                      styles.difficultyText,
+                      locked && styles.disabledText,
+                    ]}
+                  >
+                    {level.label}
+                    {locked ? ` (${requiredExp} EXP)` : ""}
+                  </Text>
+                </TouchableOpacity>
+              );
             })}
-          </ThemedText>{' '}
-          to open developer tools.
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 2: Explore</ThemedText>
-        <ThemedText>
-          {`Tap the Explore tab to learn more about what's included in this starter app.`}
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 3: Get a fresh start</ThemedText>
-        <ThemedText>
-          {`When you're ready, run `}
-          <ThemedText type="defaultSemiBold">npm run reset-project</ThemedText> to get a fresh{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> directory. This will move the current{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> to{' '}
-          <ThemedText type="defaultSemiBold">app-example</ThemedText>.
-        </ThemedText>
-      </ThemedView>
-    </ParallaxScrollView>
+
+            <TouchableOpacity onPress={() => setModalVisible(false)}>
+              <Text style={styles.cancelText}>Cancel</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
-  titleContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
+  modalBackdrop: {
+    flex: 1,
+    backgroundColor: "rgba(0,0,0,0.4)",
+    justifyContent: "center",
+    alignItems: "center",
   },
-  stepContainer: {
-    gap: 8,
-    marginBottom: 8,
+  modalContainer: {
+    backgroundColor: "#fff",
+    borderRadius: 20,
+    padding: 24,
+    width: "80%",
+    alignItems: "center",
   },
-  reactLogo: {
-    height: 178,
-    width: 290,
-    bottom: 0,
-    left: 0,
-    position: 'absolute',
+  modalTitle: {
+    fontSize: 20,
+    fontWeight: "bold",
+    marginBottom: 20,
+    fontFamily: "Nunito",
+  },
+  difficultyButton: {
+    backgroundColor: "#265D5A",
+    paddingVertical: 12,
+    paddingHorizontal: 30,
+    borderRadius: 30,
+    marginVertical: 8,
+    width: "90%",
+    alignItems: "center",
+    shadowColor: "#000", // 그림자 색상
+    shadowOffset: { width: 0, height: 2 }, // 그림자 위치
+    shadowOpacity: 0.2, // 그림자 투명도
+    shadowRadius: 4, // 그림자 블러 정도
+    elevation: 4, // Android용 그림자
+  },
+
+  difficultyText: {
+    color: "#fff",
+    fontSize: 14,
+    fontWeight: "500",
+    fontFamily: "Nunito",
+  },
+  disabledButton: {
+    backgroundColor: "#bbb",
+  },
+  disabledText: {
+    color: "#eee",
+  },
+  cancelText: {
+    marginTop: 16,
+    color: "#777",
+    fontSize: 14,
+  },
+  continueButton: {
+    width: "85%",
+    height: 50,
+    backgroundColor: "#4E4E4E",
+    borderRadius: 30,
+    alignItems: "center",
+    justifyContent: "center",
+    marginBottom: 12,
+  },
+  continueText: {
+    color: "#fff",
+    fontSize: 18,
+    fontWeight: "bold",
+    fontFamily: "Nunito",
   },
 });

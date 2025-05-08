@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "mr_sudoku",
+    "name": "Mr.Sudoku",
     "slug": "mr_sudoku",
     "version": "1.0.0",
     "orientation": "portrait",
@@ -9,14 +9,16 @@
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.mr.sudoku"
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "edgeToEdgeEnabled": true
+      "edgeToEdgeEnabled": true,
+      "package": "com.yom3117.mrsudoku"
     },
     "web": {
       "bundler": "metro",
