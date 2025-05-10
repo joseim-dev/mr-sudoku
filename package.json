@@ -1,5 +1,5 @@
 {
-  "name": "mr_sudoku",
+  "name": "mr-sudoku",
   "main": "expo-router/entry",
   "version": "1.0.0",
   "scripts": {
@@ -43,7 +43,8 @@
     "react-native-web": "~0.20.0",
     "react-native-webview": "13.13.5",
     "tailwindcss": "^3.4.17",
-    "expo-tracking-transparency": "~5.2.4"
+    "expo-tracking-transparency": "~5.2.4",
+    "expo-dev-client": "~5.1.8"
   },
   "devDependencies": {
     "@babel/core": "^7.25.2",
