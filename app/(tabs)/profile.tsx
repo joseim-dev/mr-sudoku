@@ -1,3 +1,4 @@
+import PasswordModal from "@/components/Modal/PasswordModal";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import React, { useEffect, useState } from "react";
 import {
@@ -6,14 +7,14 @@ import {
   ScrollView,
   StyleSheet,
   Text,
+  TouchableOpacity,
   View,
 } from "react-native";
-
-import Product from "@/components/page/profile/Product";
 
 export default function SettingsScreen() {
   const [userExp, setUserExp] = useState(0);
   const [userCoins, setUserCoins] = useState(0);
+  const [modalVisible, setModalVisible] = useState(false);
 
   useEffect(() => {
     const loadUserStats = async () => {
@@ -22,6 +23,7 @@ export default function SettingsScreen() {
       setUserExp(parseInt(exp || "0", 10));
       setUserCoins(parseInt(coins || "0", 10));
     };
+
     loadUserStats();
   }, []);
 
@@ -29,11 +31,16 @@ export default function SettingsScreen() {
     <SafeAreaView style={styles.container}>
       <ScrollView contentContainerStyle={styles.inner}>
         {/* 🔄 타이틀 이미지로 대체 */}
-        <Image
-          source={require("../../assets/images/mr_sudoku.png")}
-          style={styles.titleImage}
-          resizeMode="contain"
-        />
+        <TouchableOpacity
+          onLongPress={() => setModalVisible(true)}
+          activeOpacity={0.99}
+        >
+          <Image
+            source={require("../../assets/images/mr_sudoku.png")}
+            style={styles.titleImage}
+            resizeMode="contain"
+          />
+        </TouchableOpacity>
 
         <View
           style={[
@@ -72,7 +79,12 @@ export default function SettingsScreen() {
           </View>
         </View>
 
-        <Product />
+        {/* <Product /> */}
+        {/* ✅ 모달 컴포넌트 사용 */}
+        <PasswordModal
+          visible={modalVisible}
+          onClose={() => setModalVisible(false)}
+        />
 
         <View className="w-full h-[50px]"></View>
       </ScrollView>
