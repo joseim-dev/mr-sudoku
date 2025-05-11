@@ -6,9 +6,10 @@ import {
   ScrollView,
   StyleSheet,
   Text,
-  TouchableOpacity,
   View,
 } from "react-native";
+
+import Product from "@/components/page/profile/Product";
 
 export default function SettingsScreen() {
   const [userExp, setUserExp] = useState(0);
@@ -71,19 +72,7 @@ export default function SettingsScreen() {
           </View>
         </View>
 
-        <Text style={styles.sectionTitle}>Product of the Month</Text>
-
-        <View style={styles.giftBox} />
-
-        <TouchableOpacity
-          style={styles.redeemButton} // 기존 Start New Game 스타일과 동일하게 적용
-          onPress={() => {
-            // 리딤 기능 실행 로직
-            console.log("Redeem pressed!");
-          }}
-        >
-          <Text style={styles.redeemButtonText}>Redeem</Text>
-        </TouchableOpacity>
+        <Product />
 
         <View className="w-full h-[50px]"></View>
       </ScrollView>
@@ -123,43 +112,7 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     color: "#265D5A",
   },
-  sectionTitle: {
-    fontSize: 20,
-    fontWeight: "700",
-    color: "#333",
-    marginVertical: 16,
-    alignSelf: "flex-start",
-    fontFamily: "Nunito",
-  },
-  giftBox: {
-    width: "100%",
-    aspectRatio: 12 / 8,
-    borderWidth: 1.5,
-    borderColor: "#aaa",
-    borderRadius: 16,
-    backgroundColor: "#fff",
-    marginBottom: 20,
-  },
-  redeemButton: {
-    width: "95%",
-    backgroundColor: "#265D5A",
-    height: 50,
-    borderRadius: 30,
-    alignItems: "center",
-    justifyContent: "center",
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.3,
-    shadowRadius: 4,
-    elevation: 6,
-    marginTop: 12,
-  },
-  redeemButtonText: {
-    color: "#fff",
-    fontSize: 18,
-    fontWeight: "bold",
-    fontFamily: "Nunito",
-  },
+
   mustacheIcon: {
     width: 24,
     height: 24,

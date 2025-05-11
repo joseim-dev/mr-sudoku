@@ -10,7 +10,10 @@
     "newArchEnabled": true,
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.mr.sudoku"
+      "bundleIdentifier": "com.mr.sudoku",
+      "infoPlist": {
+        "ITSAppUsesNonExemptEncryption": false
+      }
     },
     "android": {
       "adaptiveIcon": {
@@ -104,7 +107,8 @@
           ]
         }
       ],
-      "expo-tracking-transparency"
+      "expo-tracking-transparency",
+      "expo-localization"
     ],
     "experiments": {
       "typedRoutes": true
