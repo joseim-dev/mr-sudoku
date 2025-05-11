@@ -1,4 +1,4 @@
-package com.yom3117.mrsudoku
+package com.mr.sudoku
 import expo.modules.splashscreen.SplashScreenManager
 
 import android.os.Build

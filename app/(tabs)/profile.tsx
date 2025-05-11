@@ -10,8 +10,18 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
+import { TestIds, useInterstitialAd } from "react-native-google-mobile-ads";
 
 export default function SettingsScreen() {
+  // const interstitialAdId = __DEV__
+  //   ? TestIds.INTERSTITIAL
+  //   : "ca-app-pub-7270360511167481/3612345866";
+  // // : Platform.OS === "ios"
+  // // ? "ca-app-pub-7270360511167481/3612345866"
+  // // : "ca-app-pub-7270360511167481/4243789307";
+
+  const { load, show, isLoaded } = useInterstitialAd(TestIds.INTERSTITIAL);
+
   const [userExp, setUserExp] = useState(0);
   const [userCoins, setUserCoins] = useState(0);
   const [modalVisible, setModalVisible] = useState(false);
@@ -26,6 +36,10 @@ export default function SettingsScreen() {
 
     loadUserStats();
   }, []);
+
+  useEffect(() => {
+    load();
+  }, [load]);
 
   return (
     <SafeAreaView style={styles.container}>
@@ -78,6 +92,31 @@ export default function SettingsScreen() {
             <Text style={styles.cardValue}>{userCoins}</Text>
           </View>
         </View>
+        <TouchableOpacity
+          disabled={!isLoaded}
+          style={{
+            marginTop: 20,
+            padding: 12,
+            backgroundColor: isLoaded ? "#265D5A" : "#A9A9A9",
+            borderRadius: 8,
+          }}
+          onPress={() => {
+            if (isLoaded) {
+              show();
+            }
+          }}
+        >
+          <Text
+            style={{
+              color: "#fff",
+              textAlign: "center",
+              fontWeight: "bold",
+              opacity: isLoaded ? 1 : 0.6,
+            }}
+          >
+            {isLoaded ? "전면 광고 보기" : "광고 로딩 중..."}
+          </Text>
+        </TouchableOpacity>
 
         {/* <Product /> */}
         {/* ✅ 모달 컴포넌트 사용 */}

@@ -5,6 +5,7 @@ import React, { useEffect, useState } from "react";
 import {
   Alert,
   Dimensions,
+  Platform,
   StyleSheet,
   Text,
   TouchableOpacity,
@@ -13,14 +14,61 @@ import {
 } from "react-native";
 import ConfettiCannon from "react-native-confetti-cannon";
 
+import {
+  TestIds,
+  useInterstitialAd,
+  useRewardedAd,
+} from "react-native-google-mobile-ads";
 import NumberPad from "../components/NumberPad";
 import SudokuBoard from "../components/SudokuBoard";
 import { generatePuzzle, Grid, solveSudoku } from "../lib/sudoku";
 
 export default function GameScreen() {
   const router = useRouter();
+  const [pendingReward, setPendingReward] = useState<{
+    exp: number;
+    coins: number;
+  } | null>(null);
+  const [shouldNavigateAfterAd, setShouldNavigateAfterAd] = useState(false);
+
   const [showConfetti, setShowConfetti] = useState(false);
   const [history, setHistory] = useState<Grid[]>([]);
+  const rewardedAdId = __DEV__
+    ? TestIds.REWARDED
+    : "ca-app-pub-7270360511167481/7326082369";
+  // : Platform.OS === "ios"
+  // ? "ca-app-pub-7270360511167481/7326082369"
+  // : "ca-app-pub-7270360511167481/6542649584";
+
+  const rewardedAdId2 = __DEV__
+    ? TestIds.REWARDED
+    : Platform.OS === "ios"
+    ? "ca-app-pub-7270360511167481/4776248133"
+    : "ca-app-pub-7270360511167481/5390184168";
+
+  const interstitialAdId = __DEV__
+    ? TestIds.INTERSTITIAL
+    : Platform.OS === "ios"
+    ? "ca-app-pub-7270360511167481/3612345866"
+    : "ca-app-pub-7270360511167481/4243789307";
+
+  const { isLoaded, isClosed, load, show, isEarnedReward, error } =
+    useRewardedAd(rewardedAdId);
+
+  const {
+    isLoaded: isLoaded2,
+    isClosed: isClosed2,
+    load: load2,
+    show: show2,
+    isEarnedReward: isEarnedReward2,
+  } = useRewardedAd(rewardedAdId2);
+
+  const {
+    load: load3,
+    show: show3,
+    isLoaded: isLoaded3,
+    isClosed: isClosed3,
+  } = useInterstitialAd(interstitialAdId);
 
   const [difficultyLabel, setDifficultyLabel] = useState("");
   const [grid, setGrid] = useState<Grid>([]);
@@ -50,6 +98,33 @@ export default function GameScreen() {
       return prev.slice(0, -1);
     });
   };
+
+  useEffect(() => {
+    if (isClosed2 && isEarnedReward2) {
+      // ❗ mistakeCount가 1 이상일 때만 줄이기
+      setMistakeCount((prev) => (prev > 0 ? prev - 1 : 0));
+      load2(); // 다음 광고를 위해 로드
+    }
+  }, [isClosed2, isEarnedReward2]);
+
+  useEffect(() => {
+    load();
+    load2();
+    load3();
+  }, [load, load2, load3]);
+
+  useEffect(() => {
+    if (isClosed && isEarnedReward) {
+      setHintCount((prev) => prev + 1); // ✅ 힌트 1개 지급
+      load(); // 광고 다시 로드
+    }
+  }, [isClosed, isEarnedReward]);
+
+  useEffect(() => {
+    if (isClosed3) {
+      router.push("/(tabs)");
+    }
+  }, [isClosed3]);
 
   useEffect(() => {
     const loadAndGenerate = async () => {
@@ -108,6 +183,12 @@ export default function GameScreen() {
       console.warn("Failed to save game:", err);
     }
   };
+  useEffect(() => {
+    console.log("Ad loaded?", isLoaded);
+    console.log("Ad closed?", isClosed);
+    console.log("Reward earned?", isEarnedReward);
+    console.log("Error?", error);
+  }, [isLoaded, isClosed, isEarnedReward, error]);
 
   const handleNumberSelect = (num: number | null) => {
     if (!selectedCell || grid.length === 0) return;
@@ -151,10 +232,21 @@ export default function GameScreen() {
       if (mistakeCount + 1 >= 3) {
         Alert.alert("Game Over", "You made 3 mistakes!", [
           {
-            text: "OK",
+            text: "Get one more chance",
+            onPress: () => {
+              if (isLoaded2) {
+                show2();
+              } else {
+                Alert.alert("Ad not ready", "Please try again later.");
+              }
+            },
+          },
+          {
+            text: "Exit",
             onPress: () => {
               router.push("/(tabs)");
             },
+            style: "cancel",
           },
         ]);
       }
@@ -265,7 +357,13 @@ export default function GameScreen() {
         [
           {
             text: "OK",
-            onPress: () => router.push("/(tabs)"),
+            onPress: () => {
+              if (isLoaded3) {
+                show3();
+              } else {
+                router.push("/(tabs)");
+              }
+            },
           },
         ]
       );
@@ -278,14 +376,31 @@ export default function GameScreen() {
 
   const handleHint = () => {
     if (!selectedCell || grid.length === 0) return;
+
     if (hintCount <= 0) {
-      Alert.alert("You have used all your hint");
+      Alert.alert("No Hints Left", "Watch an ad to get 1 more hint", [
+        {
+          text: "Cancel",
+          style: "cancel",
+        },
+        {
+          text: "Watch Ad",
+          onPress: () => {
+            if (isLoaded) {
+              show();
+              // show3();
+            } else {
+              Alert.alert("Ad not ready", "Please try again shortly.");
+            }
+          },
+        },
+      ]);
       return;
     }
 
     const { row, col } = selectedCell;
     if (grid[row][col] !== null) {
-      Alert.alert("힌트 사용 불가", "이미 채워진 셀입니다.");
+      Alert.alert("Hint Unavailable", "This cell is already filled.");
       return;
     }
 
@@ -301,9 +416,9 @@ export default function GameScreen() {
     setSelectedCell({ row, col });
   };
 
-  // const handleAutoComplete = () => {
-  //   setGrid(solutionGrid);
-  // };
+  const handleAutoComplete = () => {
+    setGrid(solutionGrid);
+  };
 
   const getConflictCells = (
     grid: Grid,
@@ -367,18 +482,37 @@ export default function GameScreen() {
               <Ionicons name="arrow-undo-outline" size={24} color="#6E6E6E" />
               <Text style={styles.iconLabel}>Undo</Text>
             </TouchableOpacity>
-            <TouchableOpacity
-              onPress={handleHint}
-              // disabled={hintCount <= 0}
-              style={styles.iconButton}
-            >
-              <Ionicons
-                name="bulb-outline"
-                size={24}
-                color={hintCount > 0 ? "#6E6E6E" : "#aaa"}
-              />
+            <TouchableOpacity onPress={handleHint} style={styles.iconButton}>
+              <View style={{ position: "relative" }}>
+                <Ionicons
+                  name="bulb-outline"
+                  size={24}
+                  color={hintCount > 0 ? "#6E6E6E" : "#aaa"}
+                />
+                <View
+                  style={{
+                    position: "absolute",
+                    top: -6,
+                    right: -10,
+                    backgroundColor: "#FF6D00",
+                    borderRadius: 20,
+                    paddingHorizontal: 0,
+                    width: 16,
+                    height: 16,
+                    justifyContent: "center",
+                    alignItems: "center",
+                  }}
+                >
+                  <Text
+                    style={{ color: "white", fontSize: 8, fontWeight: "bold" }}
+                  >
+                    {hintCount > 0 ? hintCount : "AD"}
+                  </Text>
+                </View>
+              </View>
               <Text style={styles.iconLabel}>Hint</Text>
             </TouchableOpacity>
+
             <TouchableOpacity
               onPress={() => setMemoMode((prev) => !prev)}
               style={styles.iconButton}
@@ -417,12 +551,12 @@ export default function GameScreen() {
               <Ionicons name="exit-outline" size={26} color="#F28B82" />
             </TouchableOpacity>
           </View>
-          {/* <TouchableOpacity
+          <TouchableOpacity
             style={styles.debugButton}
             onPress={handleAutoComplete}
           >
             <Text style={styles.debugText}>Auto Complete</Text>
-          </TouchableOpacity> */}
+          </TouchableOpacity>
         </>
       )}
       {showConfetti && (

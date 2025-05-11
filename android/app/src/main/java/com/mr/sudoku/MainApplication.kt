@@ -1,4 +1,4 @@
-package com.yom3117.mrsudoku
+package com.mr.sudoku
 
 import android.app.Application
 import android.content.res.Configuration

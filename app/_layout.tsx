@@ -8,6 +8,8 @@ import {
 import { useFonts } from "expo-font";
 import { Stack } from "expo-router";
 import { StatusBar } from "expo-status-bar";
+import { useEffect } from "react";
+import mobileAds from "react-native-google-mobile-ads";
 
 import "@/global.css";
 import { useColorScheme } from "@/hooks/useColorScheme";
@@ -15,6 +17,13 @@ import { Image } from "react-native";
 
 export default function RootLayout() {
   const colorScheme = useColorScheme();
+  useEffect(() => {
+    mobileAds()
+      .initialize()
+      .then(() => {
+        console.log("AdMob 초기화 완료");
+      });
+  }, []);
 
   const [loaded] = useFonts({
     SpaceMono: require("../assets/fonts/SpaceMono-Regular.ttf"),
