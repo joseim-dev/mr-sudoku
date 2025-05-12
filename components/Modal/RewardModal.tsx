@@ -35,7 +35,7 @@ export default function RewardModal({
             />
           </View>
           <TouchableOpacity style={styles.modalButton} onPress={onClose}>
-            <Text style={styles.modalButtonText}>Home</Text>
+            <Text style={styles.modalButtonText}>Done</Text>
           </TouchableOpacity>
         </View>
       </View>

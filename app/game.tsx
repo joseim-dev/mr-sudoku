@@ -1,7 +1,9 @@
 import { Ionicons } from "@expo/vector-icons";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useRouter } from "expo-router";
+import { usePostHog } from "posthog-react-native";
 import React, { useEffect, useState } from "react";
+
 import {
   Alert,
   Dimensions,
@@ -35,6 +37,8 @@ import SudokuBoard from "../components/SudokuBoard";
 import { generatePuzzle, Grid, solveSudoku } from "../lib/sudoku";
 
 export default function GameScreen() {
+  const posthog = usePostHog();
+
   const router = useRouter();
   const [showRewardModal, setShowRewardModal] = useState(false);
   const [rewardResult, setRewardResult] = useState<{
@@ -204,7 +208,10 @@ export default function GameScreen() {
         Alert.alert("Game Over", "You made 3 mistakes!", [
           {
             text: "Get one more chance",
-            onPress: () => (isLoaded2 ? show2() : Alert.alert("Ad not ready")),
+            onPress: () =>
+              isLoaded2
+                ? (show2(), posthog.capture("Watch Ad(mistake) "))
+                : Alert.alert("Ad not ready"),
           },
           {
             text: "Exit",
@@ -251,7 +258,10 @@ export default function GameScreen() {
     setRewardResult({ coins, exp });
     if (isLoaded3) {
       show3();
+      posthog.capture("Game Finished(Ad)");
     } else {
+      posthog.capture("Game Finished(No Ad)");
+
       await rewardUser(exp, coins);
       setShowRewardModal(true);
     }
@@ -266,7 +276,14 @@ export default function GameScreen() {
         { text: "Cancel", style: "cancel" },
         {
           text: "Watch Ad",
-          onPress: () => (isLoaded ? show() : Alert.alert("Ad not ready")),
+          onPress: () => {
+            if (isLoaded) {
+              show();
+              posthog.capture("Watch ad(hint)");
+            } else {
+              Alert.alert("Ad not ready");
+            }
+          },
         },
       ]);
       return;

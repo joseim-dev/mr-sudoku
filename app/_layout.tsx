@@ -13,6 +13,7 @@ import mobileAds from "react-native-google-mobile-ads";
 
 import "@/global.css";
 import { useColorScheme } from "@/hooks/useColorScheme";
+import { PostHogProvider } from "posthog-react-native";
 import { Image } from "react-native";
 
 export default function RootLayout() {
@@ -36,28 +37,35 @@ export default function RootLayout() {
   }
 
   return (
-    <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
-      <Stack>
-        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-        <Stack.Screen name="+not-found" />
-        <Stack.Screen
-          name="game"
-          options={{
-            headerStyle: {
-              backgroundColor: "#FDF6E5",
-            },
-            headerTitle: () => (
-              <Image
-                source={require("../assets/images/mr_sudoku.png")}
-                style={{ width: 160, height: 40, resizeMode: "contain" }}
-              />
-            ),
-            headerLeft: () => null, // ← 🔥 완전히 제거!
-            headerBackVisible: false, // ← 핵심! 🔥 뒤로가기 버튼 및 title 모두 제거
-          }}
-        />
-      </Stack>
-      <StatusBar style="auto" />
-    </ThemeProvider>
+    <PostHogProvider
+      apiKey="phc_DNkVN0Ht7hQ6mn42uo6x8cfm8yvvifziJ53GyKlkR8v"
+      options={{
+        host: "https://us.i.posthog.com",
+      }}
+    >
+      <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
+        <Stack>
+          <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+          <Stack.Screen name="+not-found" />
+          <Stack.Screen
+            name="game"
+            options={{
+              headerStyle: {
+                backgroundColor: "#FDF6E5",
+              },
+              headerTitle: () => (
+                <Image
+                  source={require("../assets/images/mr_sudoku.png")}
+                  style={{ width: 160, height: 40, resizeMode: "contain" }}
+                />
+              ),
+              headerLeft: () => null, // ← 🔥 완전히 제거!
+              headerBackVisible: false, // ← 핵심! 🔥 뒤로가기 버튼 및 title 모두 제거
+            }}
+          />
+        </Stack>
+        <StatusBar style="auto" />
+      </ThemeProvider>
+    </PostHogProvider>
   );
 }

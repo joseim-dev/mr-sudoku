@@ -1,6 +1,7 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useFocusEffect } from "@react-navigation/native";
 import { useRouter } from "expo-router";
+import { usePostHog } from "posthog-react-native";
 import React, { useCallback, useState } from "react";
 
 import {
@@ -16,6 +17,8 @@ import {
 } from "react-native";
 
 export default function HomeScreen() {
+  const posthog = usePostHog();
+
   const screenHeight = Dimensions.get("window").height;
   const isSmallDevice = screenHeight < 700; // 기준은 필요에 따라 조절
   const router = useRouter();
@@ -80,7 +83,9 @@ export default function HomeScreen() {
     ]);
     await AsyncStorage.setItem("sudokuDifficulty", base);
     await AsyncStorage.setItem("sudokuDifficultyLabel", key);
+    posthog.capture("Start New Game");
     setModalVisible(false);
+
     router.push("/game");
   };
 
