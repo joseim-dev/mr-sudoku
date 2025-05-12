@@ -24,11 +24,7 @@ import {
 } from "@/constants/adIds";
 import { calculateReward } from "@/utils/game/reward";
 import { formatTime } from "@/utils/game/time";
-import {
-  checkPuzzleComplete,
-  getConflictCells,
-  isDuplicateInRowColOrBox,
-} from "@/utils/game/validation";
+import { checkPuzzleComplete } from "@/utils/game/validation";
 import {
   useInterstitialAd,
   useRewardedAd,
@@ -190,6 +186,7 @@ export default function GameScreen() {
     const { row, col } = selectedCell;
     if (grid[row][col] !== null && num !== null) return;
 
+    // 메모 모드일 때
     if (memoMode && num !== null) {
       const newMemoGrid = memoGrid.map((r) => r.map((cell) => [...cell]));
       const notes = newMemoGrid[row][col];
@@ -200,16 +197,18 @@ export default function GameScreen() {
       return;
     }
 
-    const isDuplicate = isDuplicateInRowColOrBox(grid, row, col, num!);
-    if (isDuplicate && num !== null) {
+    // 틀린 입력 처리
+    const correctNumber = solutionGrid[row][col];
+    if (num !== null && num !== correctNumber) {
       Vibration.vibrate(100);
-      const conflicts = getConflictCells(grid, row, col, num!);
-      setMistakeCells([...conflicts, { row, col }]);
+      setMistakeCells([{ row, col }]);
       setMistakeCount((prev) => prev + 1);
+
       const tempGrid = grid.map((r, i) =>
         r.map((cell, j) => (i === row && j === col ? num : cell))
       );
       setGrid(tempGrid);
+
       setTimeout(() => {
         const cleared = tempGrid.map((r, i) =>
           r.map((cell, j) => (i === row && j === col ? null : cell))
@@ -225,7 +224,7 @@ export default function GameScreen() {
             onPress: () =>
               isLoaded2
                 ? (show2(), posthog.capture("Watch Ad(mistake) "))
-                : Alert.alert("Ad not ready"),
+                : Alert.alert("Ad not ready", "Please try again shortly."),
           },
           {
             text: "Exit",
@@ -237,6 +236,7 @@ export default function GameScreen() {
       return;
     }
 
+    // 정답 입력 처리
     const newGrid = grid.map((r, i) =>
       r.map((cell, j) => (i === row && j === col ? num : cell))
     );
@@ -295,7 +295,7 @@ export default function GameScreen() {
               show();
               posthog.capture("Watch ad(hint)");
             } else {
-              Alert.alert("Ad not ready");
+              Alert.alert("Ad not ready", "Please try again shortly.");
             }
           },
         },
