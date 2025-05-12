@@ -491,7 +491,7 @@ const styles = StyleSheet.create({
   },
   fabRow: {
     position: "absolute",
-    bottom: isSmallDevice ? 10 : 28,
+    bottom: isSmallDevice ? 15 : 35,
     left: 16,
     right: 16,
     flexDirection: "row",
