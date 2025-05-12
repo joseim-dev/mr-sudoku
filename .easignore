@@ -1,62 +1,77 @@
-# Copy everything from your .gitignore file here
-
-# Learn more https://docs.github.com/en/get-started/getting-started-with-git/ignoring-files
-
-# dependencies
+# Dependencies
 
 node_modules/
 
 # Expo
 
 .expo/
+.expo-shared/
 dist/
 web-build/
-expo-env.d.ts
+build/
+output/
 
-# Native
+# Git
 
-.kotlin/
-_.orig._
-_.jks
+.git/
+.gitignore
+
+# Native folders (you can include them if using prebuild or custom dev client)
+
+ios/
+android/
+
+# macOS & system
+
+.DS_Store
+
+# Debug logs
+
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log\*
+
+# Credentials and keys
+
 _.p8
 _.p12
+_.jks
 _.key
-\*.mobileprovision
+_.pem
+_.mobileprovision
+
+# Environment files
+
+.env*
+.env.*.local
 
 # Metro
 
 .metro-health-check\*
 
-# debug
-
-npm-debug._
-yarn-debug._
-yarn-error.\*
-
-# macOS
-
-.DS_Store
-\*.pem
-
-# local env files
-
-.env\*.local
-
-# typescript
+# TypeScript
 
 \*.tsbuildinfo
 
-app-example
+# Test & coverage
 
-# Ignore files and directories that EAS Build doesn't need to build your app
+coverage/
+_.test._
+**tests**/
+jest.config.js
 
-/docs
+# Documentation
 
-# Ignore native directories (if you are using EAS Build)
+docs/
+README.md
 
-/android
-/ios
+# Example apps or unused files
 
-# Ignore test coverage reports
+example/
+app-example/
+_.orig._
 
-/coverage
+# VSCode or IDE settings
+
+.vscode/
+.idea/

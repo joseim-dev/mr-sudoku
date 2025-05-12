@@ -5,7 +5,6 @@ import React, { useEffect, useState } from "react";
 import {
   Alert,
   Dimensions,
-  Platform,
   StyleSheet,
   Text,
   TouchableOpacity,
@@ -14,8 +13,20 @@ import {
 } from "react-native";
 import ConfettiCannon from "react-native-confetti-cannon";
 
+import RewardModal from "@/components/Modal/RewardModal";
 import {
-  TestIds,
+  interstitialAdId,
+  rewardedAdId,
+  rewardedAdId2,
+} from "@/constants/adIds";
+import { calculateReward } from "@/utils/game/reward";
+import { formatTime } from "@/utils/game/time";
+import {
+  checkPuzzleComplete,
+  getConflictCells,
+  isDuplicateInRowColOrBox,
+} from "@/utils/game/validation";
+import {
   useInterstitialAd,
   useRewardedAd,
 } from "react-native-google-mobile-ads";
@@ -25,36 +36,17 @@ import { generatePuzzle, Grid, solveSudoku } from "../lib/sudoku";
 
 export default function GameScreen() {
   const router = useRouter();
-  const [pendingReward, setPendingReward] = useState<{
+  const [showRewardModal, setShowRewardModal] = useState(false);
+  const [rewardResult, setRewardResult] = useState<{
     exp: number;
     coins: number;
   } | null>(null);
-  const [shouldNavigateAfterAd, setShouldNavigateAfterAd] = useState(false);
 
   const [showConfetti, setShowConfetti] = useState(false);
   const [history, setHistory] = useState<Grid[]>([]);
-  const rewardedAdId = __DEV__
-    ? TestIds.REWARDED
-    : "ca-app-pub-7270360511167481/7326082369";
-  // : Platform.OS === "ios"
-  // ? "ca-app-pub-7270360511167481/7326082369"
-  // : "ca-app-pub-7270360511167481/6542649584";
 
-  const rewardedAdId2 = __DEV__
-    ? TestIds.REWARDED
-    : Platform.OS === "ios"
-    ? "ca-app-pub-7270360511167481/4776248133"
-    : "ca-app-pub-7270360511167481/5390184168";
-
-  const interstitialAdId = __DEV__
-    ? TestIds.INTERSTITIAL
-    : Platform.OS === "ios"
-    ? "ca-app-pub-7270360511167481/3612345866"
-    : "ca-app-pub-7270360511167481/4243789307";
-
-  const { isLoaded, isClosed, load, show, isEarnedReward, error } =
+  const { isLoaded, isClosed, load, show, isEarnedReward } =
     useRewardedAd(rewardedAdId);
-
   const {
     isLoaded: isLoaded2,
     isClosed: isClosed2,
@@ -62,7 +54,6 @@ export default function GameScreen() {
     show: show2,
     isEarnedReward: isEarnedReward2,
   } = useRewardedAd(rewardedAdId2);
-
   const {
     load: load3,
     show: show3,
@@ -90,6 +81,7 @@ export default function GameScreen() {
       .map(() => Array(9).fill([]))
   );
   const [time, setTime] = useState(0);
+
   const handleUndo = () => {
     setHistory((prev) => {
       if (prev.length === 0) return prev;
@@ -101,9 +93,8 @@ export default function GameScreen() {
 
   useEffect(() => {
     if (isClosed2 && isEarnedReward2) {
-      // ❗ mistakeCount가 1 이상일 때만 줄이기
       setMistakeCount((prev) => (prev > 0 ? prev - 1 : 0));
-      load2(); // 다음 광고를 위해 로드
+      load2();
     }
   }, [isClosed2, isEarnedReward2]);
 
@@ -115,24 +106,25 @@ export default function GameScreen() {
 
   useEffect(() => {
     if (isClosed && isEarnedReward) {
-      setHintCount((prev) => prev + 1); // ✅ 힌트 1개 지급
-      load(); // 광고 다시 로드
+      setHintCount((prev) => prev + 1);
+      load();
     }
   }, [isClosed, isEarnedReward]);
 
   useEffect(() => {
-    if (isClosed3) {
-      router.push("/(tabs)");
+    if (isClosed3 && rewardResult) {
+      const { exp, coins } = rewardResult;
+      rewardUser(exp, coins).then(() => setShowRewardModal(true));
     }
-  }, [isClosed3]);
+  }, [isClosed3, rewardResult]);
 
   useEffect(() => {
     const loadAndGenerate = async () => {
       const saved = await AsyncStorage.getItem("sudokuSavedGame");
-
       if (saved) {
         const parsed = JSON.parse(saved);
         setGrid(parsed.grid);
+        setHintCount(parsed.hintCount ?? 1);
         setInitialGrid(parsed.initialGrid);
         setSolutionGrid(parsed.solutionGrid);
         setMemoGrid(parsed.memoGrid || memoGrid);
@@ -141,24 +133,18 @@ export default function GameScreen() {
         setDifficultyLabel(parsed.difficultyLabel?.toUpperCase() || "EASY");
         return;
       }
-
-      // 새 게임 생성
       const difficulty =
         (await AsyncStorage.getItem("sudokuDifficulty")) || "easy";
       const label =
         (await AsyncStorage.getItem("sudokuDifficultyLabel")) || "easy";
-
       setDifficultyLabel(label.toUpperCase());
-
       const puzzle = generatePuzzle(difficulty as any);
       const solution = JSON.parse(JSON.stringify(puzzle));
       solveSudoku(solution);
-
       setGrid(puzzle);
       setInitialGrid(puzzle);
       setSolutionGrid(solution);
     };
-
     loadAndGenerate();
   }, []);
 
@@ -176,19 +162,10 @@ export default function GameScreen() {
       mistakeCount,
       time,
       difficultyLabel,
+      hintCount,
     };
-    try {
-      await AsyncStorage.setItem("sudokuSavedGame", JSON.stringify(gameState));
-    } catch (err) {
-      console.warn("Failed to save game:", err);
-    }
+    await AsyncStorage.setItem("sudokuSavedGame", JSON.stringify(gameState));
   };
-  useEffect(() => {
-    console.log("Ad loaded?", isLoaded);
-    console.log("Ad closed?", isClosed);
-    console.log("Reward earned?", isEarnedReward);
-    console.log("Error?", error);
-  }, [isLoaded, isClosed, isEarnedReward, error]);
 
   const handleNumberSelect = (num: number | null) => {
     if (!selectedCell || grid.length === 0) return;
@@ -198,34 +175,28 @@ export default function GameScreen() {
     if (memoMode && num !== null) {
       const newMemoGrid = memoGrid.map((r) => r.map((cell) => [...cell]));
       const notes = newMemoGrid[row][col];
-      if (notes.includes(num)) {
-        newMemoGrid[row][col] = notes.filter((n) => n !== num);
-      } else {
-        newMemoGrid[row][col] = [...notes, num].sort();
-      }
+      newMemoGrid[row][col] = notes.includes(num)
+        ? notes.filter((n) => n !== num)
+        : [...notes, num].sort();
       setMemoGrid(newMemoGrid);
       return;
     }
 
     const isDuplicate = isDuplicateInRowColOrBox(grid, row, col, num!);
-
     if (isDuplicate && num !== null) {
       Vibration.vibrate(100);
       const conflicts = getConflictCells(grid, row, col, num!);
-      const fullMistakeSet = [...conflicts, { row, col }];
-      setMistakeCells(fullMistakeSet);
+      setMistakeCells([...conflicts, { row, col }]);
       setMistakeCount((prev) => prev + 1);
-
       const tempGrid = grid.map((r, i) =>
         r.map((cell, j) => (i === row && j === col ? num : cell))
       );
       setGrid(tempGrid);
-
       setTimeout(() => {
-        const clearedGrid = tempGrid.map((r, i) =>
+        const cleared = tempGrid.map((r, i) =>
           r.map((cell, j) => (i === row && j === col ? null : cell))
         );
-        setGrid(clearedGrid);
+        setGrid(cleared);
         setMistakeCells([]);
       }, 800);
 
@@ -233,24 +204,15 @@ export default function GameScreen() {
         Alert.alert("Game Over", "You made 3 mistakes!", [
           {
             text: "Get one more chance",
-            onPress: () => {
-              if (isLoaded2) {
-                show2();
-              } else {
-                Alert.alert("Ad not ready", "Please try again later.");
-              }
-            },
+            onPress: () => (isLoaded2 ? show2() : Alert.alert("Ad not ready")),
           },
           {
             text: "Exit",
-            onPress: () => {
-              router.push("/(tabs)");
-            },
+            onPress: () => router.push("/(tabs)"),
             style: "cancel",
           },
         ]);
       }
-
       return;
     }
 
@@ -258,141 +220,53 @@ export default function GameScreen() {
       r.map((cell, j) => (i === row && j === col ? num : cell))
     );
     setHistory((prev) => [...prev, grid.map((r) => [...r])]);
-
     setGrid(newGrid);
   };
 
-  const isDuplicateInRowColOrBox = (
-    grid: Grid,
-    row: number,
-    col: number,
-    num: number
-  ): boolean => {
-    // 행/열 중복 확인
-    for (let i = 0; i < 9; i++) {
-      if (i !== col && grid[row][i] === num) return true;
-      if (i !== row && grid[i][col] === num) return true;
-    }
-
-    // 3x3 박스 내 중복 확인
-    const boxStartRow = Math.floor(row / 3) * 3;
-    const boxStartCol = Math.floor(col / 3) * 3;
-
-    for (let i = boxStartRow; i < boxStartRow + 3; i++) {
-      for (let j = boxStartCol; j < boxStartCol + 3; j++) {
-        if ((i !== row || j !== col) && grid[i][j] === num) {
-          return true;
-        }
-      }
-    }
-
-    return false;
+  const rewardUser = async (exp: number, coins: number) => {
+    const prevExp = parseInt(
+      (await AsyncStorage.getItem("userExp")) || "0",
+      10
+    );
+    const prevCoins = parseInt(
+      (await AsyncStorage.getItem("userCoins")) || "0",
+      10
+    );
+    await AsyncStorage.setItem("userExp", (prevExp + exp).toString());
+    await AsyncStorage.setItem("userCoins", (prevCoins + coins).toString());
   };
 
-  const checkPuzzleComplete = (grid: Grid): boolean => {
-    for (let i = 0; i < 9; i++) {
-      for (let j = 0; j < 9; j++) {
-        if (grid[i][j] !== solutionGrid[i][j]) return false;
-      }
-    }
-    return true;
-  };
   const handleSubmit = async () => {
-    if (checkPuzzleComplete(grid)) {
-      setShowConfetti(true);
-      await AsyncStorage.removeItem("sudokuSavedGame");
-
-      // 🪙 리워드 로직 시작
-      // 🎯 고정 경험치 & 보너스 코인 지급 로직
-      const coinTable: Record<string, number> = {
-        easy: 5,
-        normal: 7,
-        medium: 10,
-        hard: 15,
-        extreme: 20,
-        master: 25,
-      };
-
-      const expTable: Record<string, number> = {
-        easy: 10,
-        normal: 20,
-        medium: 40,
-        hard: 60,
-        extreme: 80,
-        master: 100,
-      };
-
-      const baseExp = expTable[difficultyLabel.toLowerCase()] || 10;
-      const baseCoins = coinTable[difficultyLabel.toLowerCase()] || 5;
-
-      let multiplier = 1;
-      if (mistakeCount === 0) multiplier = 2;
-      else if (mistakeCount === 1) multiplier = 1.5;
-      else if (mistakeCount === 2) multiplier = 1.2;
-
-      const earnedCoins = Math.floor(baseCoins * multiplier);
-      const earnedExp = baseExp; // ❗ 경험치는 고정
-
-      // 기존 값 불러오기
-      const prevExp = parseInt(
-        (await AsyncStorage.getItem("userExp")) || "0",
-        10
-      );
-      const prevCoins = parseInt(
-        (await AsyncStorage.getItem("userCoins")) || "0",
-        10
-      );
-
-      // 저장
-      await AsyncStorage.setItem("userExp", (prevExp + earnedExp).toString());
-      await AsyncStorage.setItem(
-        "userCoins",
-        (prevCoins + earnedCoins).toString()
-      );
-
-      // 알림 표시 + 홈으로 이동
-      Alert.alert(
-        "🎉 Mr.Sudoku!",
-        `+${earnedExp} EXP\n+${earnedCoins} Mustaches`,
-        [
-          {
-            text: "OK",
-            onPress: () => {
-              if (isLoaded3) {
-                show3();
-              } else {
-                router.push("/(tabs)");
-              }
-            },
-          },
-        ]
-      );
-
-      setTimeout(() => setShowConfetti(false), 4000);
-    } else {
+    if (!grid.length || !checkPuzzleComplete(grid, solutionGrid)) {
       Alert.alert("Please check again", "There are blanks in the puzzle.");
+      return;
     }
+    setShowConfetti(true);
+    await AsyncStorage.removeItem("sudokuSavedGame");
+
+    const { coins, exp } = calculateReward(
+      difficultyLabel.toLowerCase(),
+      mistakeCount
+    );
+    setRewardResult({ coins, exp });
+    if (isLoaded3) {
+      show3();
+    } else {
+      await rewardUser(exp, coins);
+      setShowRewardModal(true);
+    }
+
+    setTimeout(() => setShowConfetti(false), 4000);
   };
 
   const handleHint = () => {
     if (!selectedCell || grid.length === 0) return;
-
     if (hintCount <= 0) {
       Alert.alert("No Hints Left", "Watch an ad to get 1 more hint", [
-        {
-          text: "Cancel",
-          style: "cancel",
-        },
+        { text: "Cancel", style: "cancel" },
         {
           text: "Watch Ad",
-          onPress: () => {
-            if (isLoaded) {
-              show();
-              // show3();
-            } else {
-              Alert.alert("Ad not ready", "Please try again shortly.");
-            }
-          },
+          onPress: () => (isLoaded ? show() : Alert.alert("Ad not ready")),
         },
       ]);
       return;
@@ -403,7 +277,6 @@ export default function GameScreen() {
       Alert.alert("Hint Unavailable", "This cell is already filled.");
       return;
     }
-
     const hintNumber = solutionGrid[row][col];
     const newGrid = grid.map((r, i) =>
       r.map((cell, j) => (i === row && j === col ? hintNumber : cell))
@@ -418,41 +291,6 @@ export default function GameScreen() {
 
   const handleAutoComplete = () => {
     setGrid(solutionGrid);
-  };
-
-  const getConflictCells = (
-    grid: Grid,
-    row: number,
-    col: number,
-    num: number
-  ): { row: number; col: number }[] => {
-    const conflicts: { row: number; col: number }[] = [];
-
-    // Row & Column
-    for (let i = 0; i < 9; i++) {
-      if (i !== col && grid[row][i] === num) conflicts.push({ row, col: i });
-      if (i !== row && grid[i][col] === num) conflicts.push({ row: i, col });
-    }
-
-    // Box
-    const boxStartRow = Math.floor(row / 3) * 3;
-    const boxStartCol = Math.floor(col / 3) * 3;
-
-    for (let i = boxStartRow; i < boxStartRow + 3; i++) {
-      for (let j = boxStartCol; j < boxStartCol + 3; j++) {
-        if ((i !== row || j !== col) && grid[i][j] === num) {
-          conflicts.push({ row: i, col: j });
-        }
-      }
-    }
-
-    return conflicts;
-  };
-
-  const formatTime = (seconds: number): string => {
-    const m = Math.floor(seconds / 60);
-    const s = seconds % 60;
-    return `${String(m).padStart(2, "0")}:${String(s).padStart(2, "0")}`;
   };
 
   return (
@@ -558,6 +396,7 @@ export default function GameScreen() {
           </TouchableOpacity>
         </>
       )}
+
       {showConfetti && (
         <ConfettiCannon
           count={120}
@@ -567,6 +406,17 @@ export default function GameScreen() {
           fadeOut
         />
       )}
+
+      <RewardModal
+        visible={showRewardModal}
+        exp={rewardResult?.exp || 0}
+        coins={rewardResult?.coins || 0}
+        onClose={() => {
+          setShowRewardModal(false);
+          setRewardResult(null);
+          router.push("/(tabs)");
+        }}
+      />
     </View>
   );
 }
@@ -591,10 +441,9 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-around",
     marginTop: isSmallDevice ? 4 : 20,
-    marginBottom: isSmallDevice ? 8 : 40, // 추가된 부분
+    marginBottom: isSmallDevice ? 8 : 40,
     alignItems: "center",
   },
-
   iconButton: {
     alignItems: "center",
   },

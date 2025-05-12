@@ -1,3 +1,5 @@
+// utils/reward.ts
+
 export const calculateReward = (
   difficulty: string,
   mistakeCount: number
@@ -20,8 +22,8 @@ export const calculateReward = (
     master: 100,
   };
 
-  const baseExp = expTable[difficulty.toLowerCase()] || 10;
-  const baseCoins = coinTable[difficulty.toLowerCase()] || 5;
+  const baseCoins = coinTable[difficulty] || 5;
+  const baseExp = expTable[difficulty] || 10;
 
   let multiplier = 1;
   if (mistakeCount === 0) multiplier = 2;
@@ -29,7 +31,7 @@ export const calculateReward = (
   else if (mistakeCount === 2) multiplier = 1.2;
 
   return {
-    exp: baseExp,
     coins: Math.floor(baseCoins * multiplier),
+    exp: baseExp,
   };
 };
