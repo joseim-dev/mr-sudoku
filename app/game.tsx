@@ -474,7 +474,6 @@ export default function GameScreen() {
             onCellSelect={handleCellSelect}
             mistakeCells={mistakeCells}
             memoGrid={memoGrid}
-            solutionGrid={solutionGrid}
             initialGrid={initialGrid}
           />
           <View style={styles.topBar}>
@@ -578,7 +577,7 @@ const isSmallDevice = screenHeight < 700; // iPhone SE 등
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 16,
+    padding: 10,
     backgroundColor: "#FDF7E7",
     justifyContent: "flex-start",
   },
