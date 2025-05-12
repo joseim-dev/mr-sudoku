@@ -1,7 +1,12 @@
-// components/RewardModal.tsx
-
 import React from "react";
-import { Modal, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import {
+  Image,
+  Modal,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
 
 interface RewardModalProps {
   visible: boolean;
@@ -20,9 +25,15 @@ export default function RewardModal({
     <Modal transparent animationType="fade" visible={visible}>
       <View style={styles.modalOverlay}>
         <View style={styles.modalContent}>
-          <Text style={styles.modalTitle}>🎉 Mr.Sudoku!</Text>
+          <Text style={styles.modalTitle}>Mr.Sudoku!</Text>
           <Text style={styles.modalReward}>+{exp} EXP</Text>
-          <Text style={styles.modalReward}>+{coins} Mustaches</Text>
+          <View style={styles.coinRewardContainer}>
+            <Text style={styles.modalReward}>+{coins} </Text>
+            <Image
+              source={require("../../assets/images/mustache.png")}
+              style={styles.miniIcon}
+            />
+          </View>
           <TouchableOpacity style={styles.modalButton} onPress={onClose}>
             <Text style={styles.modalButtonText}>Home</Text>
           </TouchableOpacity>
@@ -52,14 +63,26 @@ const styles = StyleSheet.create({
     elevation: 10,
   },
   modalTitle: {
-    fontSize: 20,
-    fontWeight: "bold",
+    fontSize: 26,
+    fontWeight: "800",
     marginBottom: 12,
+    color: "#265D5A",
+    fontFamily: "Nunito-Bold", // Nunito 폰트 적용
   },
   modalReward: {
     fontSize: 18,
     marginVertical: 4,
     color: "#265D5A",
+  },
+  coinRewardContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginVertical: 4,
+  },
+  miniIcon: {
+    width: 20,
+    height: 20,
+    marginLeft: 4,
   },
   modalButton: {
     marginTop: 16,

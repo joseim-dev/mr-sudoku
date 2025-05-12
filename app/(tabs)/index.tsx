@@ -26,10 +26,10 @@ export default function HomeScreen() {
   const levelRequirements: Record<string, number> = {
     easy: 0,
     normal: 0,
-    medium: 100,
-    hard: 300,
-    extreme: 600,
-    master: 1000,
+    medium: 30,
+    hard: 100,
+    extreme: 220,
+    master: 400,
   };
 
   const difficulties = [
@@ -88,7 +88,7 @@ export default function HomeScreen() {
     require("../../assets/images/home-card-1.png"),
     require("../../assets/images/home-card-2.png"),
     require("../../assets/images/home-card-3.png"),
-    require("../../assets/images/home-card-4.png"),
+    // require("../../assets/images/home-card-4.png"),
   ];
 
   const formatTime = (seconds: number): string => {
