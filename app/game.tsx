@@ -18,6 +18,7 @@ import ConfettiCannon from "react-native-confetti-cannon";
 import RewardModal from "@/components/Modal/RewardModal";
 import {
   interstitialAdId,
+  interstitialAdId2,
   rewardedAdId,
   rewardedAdId2,
 } from "@/constants/adIds";
@@ -64,6 +65,12 @@ export default function GameScreen() {
     isLoaded: isLoaded3,
     isClosed: isClosed3,
   } = useInterstitialAd(interstitialAdId);
+  const {
+    load: load4,
+    show: show4,
+    isLoaded: isLoaded4,
+    isClosed: isClosed4,
+  } = useInterstitialAd(interstitialAdId2);
 
   const [difficultyLabel, setDifficultyLabel] = useState("");
   const [grid, setGrid] = useState<Grid>([]);
@@ -106,7 +113,8 @@ export default function GameScreen() {
     load();
     load2();
     load3();
-  }, [load, load2, load3]);
+    load4();
+  }, [load, load2, load3, load4]);
 
   useEffect(() => {
     if (isClosed && isEarnedReward) {
@@ -121,6 +129,12 @@ export default function GameScreen() {
       rewardUser(exp, coins).then(() => setShowRewardModal(true));
     }
   }, [isClosed3, rewardResult]);
+
+  useEffect(() => {
+    if (isClosed4) {
+      router.push("/(tabs)");
+    }
+  }, [isClosed4]);
 
   useEffect(() => {
     const loadAndGenerate = async () => {
@@ -400,17 +414,23 @@ export default function GameScreen() {
               onPress={async () => {
                 await saveGameState();
                 router.push("/(tabs)");
+
+                // if (isLoaded4) {
+                //   show4();
+                // } else {
+                //   router.push("/(tabs)");
+                // }
               }}
             >
               <Ionicons name="exit-outline" size={26} color="#F28B82" />
             </TouchableOpacity>
           </View>
-          <TouchableOpacity
+          {/* <TouchableOpacity
             style={styles.debugButton}
             onPress={handleAutoComplete}
           >
             <Text style={styles.debugText}>Auto Complete</Text>
-          </TouchableOpacity>
+          </TouchableOpacity> */}
         </>
       )}
 

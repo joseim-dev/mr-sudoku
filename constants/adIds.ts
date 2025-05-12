@@ -20,3 +20,9 @@ export const interstitialAdId = __DEV__
   : Platform.OS === "ios"
   ? "ca-app-pub-7270360511167481/3612345866"
   : "ca-app-pub-7270360511167481/4243789307";
+
+export const interstitialAdId2 = __DEV__
+  ? TestIds.INTERSTITIAL
+  : Platform.OS === "ios"
+  ? "ca-app-pub-7270360511167481/8024387685"
+  : "ca-app-pub-7270360511167481/1662175220";

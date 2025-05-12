@@ -78,7 +78,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#fdd",
   },
   cellText: {
-    fontSize: 24,
+    fontSize: 26,
     fontWeight: "300",
     color: "#000",
   },
