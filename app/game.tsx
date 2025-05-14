@@ -180,6 +180,34 @@ export default function GameScreen() {
     };
     await AsyncStorage.setItem("sudokuSavedGame", JSON.stringify(gameState));
   };
+  const showGameOverAlert = () => {
+    Alert.alert("Game Over", "You made 3 mistakes!", [
+      {
+        text: "Get one more chance",
+        onPress: () => {
+          if (isLoaded2) {
+            show2();
+            posthog.capture("Watch Ad(mistake)");
+          } else {
+            Alert.alert("Ad not ready", "Please try again shortly.", [
+              {
+                text: "OK",
+                onPress: () => {
+                  // 광고 준비가 안 되었으면 다시 Game Over Alert을 띄움
+                  showGameOverAlert();
+                },
+              },
+            ]);
+          }
+        },
+      },
+      {
+        text: "Exit",
+        onPress: () => router.push("/(tabs)"),
+        style: "cancel",
+      },
+    ]);
+  };
 
   const handleNumberSelect = (num: number | null) => {
     if (!selectedCell || grid.length === 0) return;
@@ -218,20 +246,7 @@ export default function GameScreen() {
       }, 800);
 
       if (mistakeCount + 1 >= 3) {
-        Alert.alert("Game Over", "You made 3 mistakes!", [
-          {
-            text: "Get one more chance",
-            onPress: () =>
-              isLoaded2
-                ? (show2(), posthog.capture("Watch Ad(mistake) "))
-                : Alert.alert("Ad not ready", "Please try again shortly."),
-          },
-          {
-            text: "Exit",
-            onPress: () => router.push("/(tabs)"),
-            style: "cancel",
-          },
-        ]);
+        showGameOverAlert(); // ✅ 기존 Alert.alert(...) 대신
       }
       return;
     }
@@ -425,12 +440,12 @@ export default function GameScreen() {
               <Ionicons name="exit-outline" size={26} color="#F28B82" />
             </TouchableOpacity>
           </View>
-          {/* <TouchableOpacity
+          <TouchableOpacity
             style={styles.debugButton}
             onPress={handleAutoComplete}
           >
             <Text style={styles.debugText}>Auto Complete</Text>
-          </TouchableOpacity> */}
+          </TouchableOpacity>
         </>
       )}
 
