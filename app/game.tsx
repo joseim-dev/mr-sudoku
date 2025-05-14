@@ -440,12 +440,12 @@ export default function GameScreen() {
               <Ionicons name="exit-outline" size={26} color="#F28B82" />
             </TouchableOpacity>
           </View>
-          <TouchableOpacity
+          {/* <TouchableOpacity
             style={styles.debugButton}
             onPress={handleAutoComplete}
           >
             <Text style={styles.debugText}>Auto Complete</Text>
-          </TouchableOpacity>
+          </TouchableOpacity> */}
         </>
       )}
 
