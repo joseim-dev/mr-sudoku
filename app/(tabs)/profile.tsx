@@ -1,4 +1,6 @@
 import PasswordModal from "@/components/Modal/PasswordModal";
+import Product from "@/components/page/profile/Product";
+import { fetchMonthlyProducts } from "@/utils/fetchMonthlyProducts";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import React, { useEffect, useState } from "react";
 import {
@@ -15,6 +17,16 @@ export default function SettingsScreen() {
   const [userExp, setUserExp] = useState(0);
   const [userCoins, setUserCoins] = useState(0);
   const [modalVisible, setModalVisible] = useState(false);
+
+  const [products, setProducts] = useState([]);
+
+  useEffect(() => {
+    const loadData = async () => {
+      const data = await fetchMonthlyProducts();
+      if (data) setProducts(data);
+    };
+    loadData();
+  }, []);
 
   useEffect(() => {
     const loadUserStats = async () => {
@@ -78,6 +90,7 @@ export default function SettingsScreen() {
             <Text style={styles.cardValue}>{userCoins}</Text>
           </View>
         </View>
+        {products.length > 0 ? <Product /> : null}
 
         {/* <Product /> */}
         {/* ✅ 모달 컴포넌트 사용 */}

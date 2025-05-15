@@ -2,8 +2,13 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useFocusEffect } from "@react-navigation/native";
 import { useRouter } from "expo-router";
 import { usePostHog } from "posthog-react-native";
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 
+import {
+  getTrackingPermissionsAsync,
+  PermissionStatus,
+  requestTrackingPermissionsAsync,
+} from "expo-tracking-transparency";
 import {
   Dimensions,
   Image,
@@ -17,6 +22,16 @@ import {
 } from "react-native";
 
 export default function HomeScreen() {
+  useEffect(() => {
+    const init = async () => {
+      const { status } = await getTrackingPermissionsAsync();
+      if (status === PermissionStatus.UNDETERMINED) {
+        await requestTrackingPermissionsAsync();
+      }
+    };
+
+    init();
+  }, []);
   const posthog = usePostHog();
 
   const screenHeight = Dimensions.get("window").height;
