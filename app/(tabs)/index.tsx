@@ -13,6 +13,7 @@ import {
   Dimensions,
   Image,
   ImageBackground,
+  InteractionManager,
   Modal,
   ScrollView,
   StyleSheet,
@@ -24,12 +25,13 @@ import {
 export default function HomeScreen() {
   useEffect(() => {
     const init = async () => {
-      const { status } = await getTrackingPermissionsAsync();
-      if (status === PermissionStatus.UNDETERMINED) {
-        await requestTrackingPermissionsAsync();
-      }
+      InteractionManager.runAfterInteractions(async () => {
+        const { status } = await getTrackingPermissionsAsync();
+        if (status === PermissionStatus.UNDETERMINED) {
+          await requestTrackingPermissionsAsync();
+        }
+      });
     };
-
     init();
   }, []);
   const posthog = usePostHog();
