@@ -2,18 +2,13 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useFocusEffect } from "@react-navigation/native";
 import { useRouter } from "expo-router";
 import { usePostHog } from "posthog-react-native";
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useState } from "react";
 
-import {
-  getTrackingPermissionsAsync,
-  PermissionStatus,
-  requestTrackingPermissionsAsync,
-} from "expo-tracking-transparency";
+import { requestTrackingPermissionsAsync } from "expo-tracking-transparency";
 import {
   Dimensions,
   Image,
   ImageBackground,
-  InteractionManager,
   Modal,
   ScrollView,
   StyleSheet,
@@ -23,17 +18,26 @@ import {
 } from "react-native";
 
 export default function HomeScreen() {
-  useEffect(() => {
-    const init = async () => {
-      InteractionManager.runAfterInteractions(async () => {
-        const { status } = await getTrackingPermissionsAsync();
-        if (status === PermissionStatus.UNDETERMINED) {
-          await requestTrackingPermissionsAsync();
-        }
-      });
-    };
-    init();
-  }, []);
+  // useEffect(() => {
+  //   const init = async () => {
+  //     InteractionManager.runAfterInteractions(async () => {
+  //       const { status } = await getTrackingPermissionsAsync();
+  //       if (status === PermissionStatus.UNDETERMINED) {
+  //         await requestTrackingPermissionsAsync();
+  //       }
+  //     });
+  //   };
+  //   init();
+  // }, []);
+
+  // useEffect(() => {
+  //   (async () => {
+  //     const { status } = await requestTrackingPermissionsAsync();
+  //     if (status === "granted") {
+  //       console.log("Yay! I have user permission to track data");
+  //     }
+  //   })();
+  // }, []);
   const posthog = usePostHog();
 
   const screenHeight = Dimensions.get("window").height;
@@ -82,6 +86,7 @@ export default function HomeScreen() {
 
   const handleStartGame = () => {
     setModalVisible(true);
+    requestTrackingPermissionsAsync();
   };
 
   const handleContinueGame = () => {
