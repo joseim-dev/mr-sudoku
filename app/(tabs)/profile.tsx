@@ -2,9 +2,11 @@ import PasswordModal from "@/components/Modal/PasswordModal";
 import Product from "@/components/page/profile/Product";
 import { fetchMonthlyProducts } from "@/utils/fetchMonthlyProducts";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import React, { useEffect, useState } from "react";
+import { useFocusEffect } from "@react-navigation/native";
+import React, { useCallback, useEffect, useState } from "react";
 import {
   Image,
+  Platform,
   SafeAreaView,
   ScrollView,
   StyleSheet,
@@ -22,22 +24,24 @@ export default function SettingsScreen() {
 
   useEffect(() => {
     const loadData = async () => {
-      const data = await fetchMonthlyProducts();
+      const data = await fetchMonthlyProducts(Platform.OS);
       if (data) setProducts(data);
     };
     loadData();
   }, []);
 
-  useEffect(() => {
-    const loadUserStats = async () => {
-      const exp = await AsyncStorage.getItem("userExp");
-      const coins = await AsyncStorage.getItem("userCoins");
-      setUserExp(parseInt(exp || "0", 10));
-      setUserCoins(parseInt(coins || "0", 10));
-    };
+  useFocusEffect(
+    useCallback(() => {
+      const loadUserStats = async () => {
+        const exp = await AsyncStorage.getItem("userExp");
+        const coins = await AsyncStorage.getItem("userCoins");
+        setUserExp(parseInt(exp || "0", 10));
+        setUserCoins(parseInt(coins || "0", 10));
+      };
 
-    loadUserStats();
-  }, []);
+      loadUserStats();
+    }, [])
+  );
 
   return (
     <SafeAreaView style={styles.container}>
@@ -90,10 +94,8 @@ export default function SettingsScreen() {
             <Text style={styles.cardValue}>{userCoins}</Text>
           </View>
         </View>
-        {products.length > 0 ? <Product /> : null}
 
-        {/* <Product /> */}
-        {/* ✅ 모달 컴포넌트 사용 */}
+        <Product />
         <PasswordModal
           visible={modalVisible}
           onClose={() => setModalVisible(false)}

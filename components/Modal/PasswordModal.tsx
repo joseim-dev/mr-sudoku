@@ -20,7 +20,7 @@ export default function PasswordModal({
   onClose,
 }: PasswordModalProps) {
   const [inputPw, setInputPw] = useState("");
-  const pw = "12345678";
+  const pw = "22201472";
 
   const handleCheckPassword = async (input: string) => {
     if (input === pw) {
