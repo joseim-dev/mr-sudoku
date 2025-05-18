@@ -6,6 +6,7 @@ import {
   ThemeProvider,
 } from "@react-navigation/native";
 import { useFonts } from "expo-font";
+import * as NavigationBar from "expo-navigation-bar";
 import { Stack } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import { useEffect } from "react";
@@ -24,6 +25,10 @@ export default function RootLayout() {
       .then(() => {
         console.log("AdMob 초기화 완료");
       });
+  }, []);
+
+  useEffect(() => {
+    NavigationBar.setVisibilityAsync("hidden");
   }, []);
 
   const [loaded] = useFonts({
