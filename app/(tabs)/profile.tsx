@@ -156,13 +156,15 @@ const styles = StyleSheet.create({
   },
   stampButton: {
     marginTop: 20,
+    width: "95%",
     backgroundColor: "#fff",
     paddingVertical: 14,
     paddingHorizontal: 24,
-    borderRadius: 12,
+    borderRadius: 30,
     elevation: 3,
     alignItems: "center",
-    width: "100%",
+    borderWidth: 2,
+    borderColor: "#A4C3BD",
   },
   stampButtonText: {
     fontSize: 16,
