@@ -491,7 +491,7 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     alignItems: "flex-end",
     marginBottom: 3,
-    height: "8%",
+    height: "6%",
   },
   headerText: { fontSize: 16, color: "#444" },
   topBar: {
@@ -510,12 +510,12 @@ const styles = StyleSheet.create({
     color: "#6E6E6E",
   },
   fabRow: {
-    height: "14%",
+    height: "16%",
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "flex-start",
     paddingHorizontal: 16,
-    marginTop: 8,
+    paddingTop: 8,
   },
   fab: {
     width: "82%",
