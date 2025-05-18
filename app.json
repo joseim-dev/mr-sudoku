@@ -19,7 +19,7 @@
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
-        "backgroundColor": "#ffffff"
+        "backgroundColor": "#FDF5E5"
       },
       "edgeToEdgeEnabled": true,
       "package": "com.mr.sudoku",
