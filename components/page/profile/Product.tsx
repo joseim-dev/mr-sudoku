@@ -1,7 +1,8 @@
 import { fetchMonthlyProducts } from "@/utils/fetchMonthlyProducts";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useFocusEffect } from "@react-navigation/native";
 import { useRouter } from "expo-router";
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useState } from "react";
 import {
   ActivityIndicator,
   Alert,
@@ -19,28 +20,31 @@ export default function Product() {
   const [isLoading, setIsLoading] = useState(true);
   const router = useRouter();
 
-  useEffect(() => {
-    const loadData = async () => {
-      try {
-        const [coinStr, data] = await Promise.all([
-          AsyncStorage.getItem("userCoins"),
-          fetchMonthlyProducts(Platform.OS),
-        ]);
+  useFocusEffect(
+    useCallback(() => {
+      const loadData = async () => {
+        try {
+          const [coinStr, data] = await Promise.all([
+            AsyncStorage.getItem("userCoins"),
+            fetchMonthlyProducts(Platform.OS),
+          ]);
 
-        const coinValue = parseInt(coinStr || "0", 10);
-        setCoins(coinValue);
+          const coinValue = parseInt(coinStr || "0", 10);
+          setCoins(coinValue);
 
-        if (data && data.length > 0) {
-          setProduct(data[0]);
+          if (data && data.length > 0) {
+            setProduct(data[0]);
+          }
+        } catch (error) {
+          console.error("Error loading data:", error);
+        } finally {
+          setIsLoading(false);
         }
-      } catch (error) {
-        console.error("Error loading data:", error);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-    loadData();
-  }, []);
+      };
+
+      loadData();
+    }, [])
+  );
 
   const handleRedeem = async () => {
     if (!product?.price || !product?.img_url) {
@@ -87,7 +91,23 @@ export default function Product() {
 
       await AsyncStorage.setItem("stamps", JSON.stringify(stamps));
 
-      Alert.alert("Stamp Purchased");
+      Alert.alert(
+        "Stamp Purchased",
+        "Your monthly stamp has been successfully redeemed.",
+        [
+          {
+            text: "Go to Stamp Page",
+            onPress: () => {
+              router.push("/stamps"); // 원하는 라우트로 이동
+            },
+          },
+          {
+            text: "Close",
+            style: "cancel",
+          },
+        ],
+        { cancelable: true }
+      );
     } catch (err) {
       console.error("Error saving stamp:", err);
       Alert.alert(

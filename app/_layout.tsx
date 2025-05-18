@@ -29,6 +29,7 @@ export default function RootLayout() {
 
   useEffect(() => {
     NavigationBar.setVisibilityAsync("hidden");
+    NavigationBar.setBehaviorAsync("overlay-swipe");
   }, []);
 
   const [loaded] = useFonts({
