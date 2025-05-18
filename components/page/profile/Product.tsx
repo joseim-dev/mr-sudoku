@@ -16,20 +16,27 @@ import {
 export default function Product() {
   const [product, setProduct] = useState<any>(null);
   const [coins, setCoins] = useState<number>(0);
+  const [isLoading, setIsLoading] = useState(true);
   const router = useRouter();
 
   useEffect(() => {
     const loadData = async () => {
-      const [coinStr, data] = await Promise.all([
-        AsyncStorage.getItem("userCoins"),
-        fetchMonthlyProducts(Platform.OS),
-      ]);
+      try {
+        const [coinStr, data] = await Promise.all([
+          AsyncStorage.getItem("userCoins"),
+          fetchMonthlyProducts(Platform.OS),
+        ]);
 
-      const coinValue = parseInt(coinStr || "0", 10);
-      setCoins(coinValue);
+        const coinValue = parseInt(coinStr || "0", 10);
+        setCoins(coinValue);
 
-      if (data && data.length > 0) {
-        setProduct(data[0]);
+        if (data && data.length > 0) {
+          setProduct(data[0]);
+        }
+      } catch (error) {
+        console.error("Error loading data:", error);
+      } finally {
+        setIsLoading(false);
       }
     };
     loadData();
@@ -56,13 +63,21 @@ export default function Product() {
       setCoins(updatedCoins);
 
       const now = new Date();
-      const year = now.getFullYear().toString(); // e.g., "2025"
+      const year = now.getFullYear().toString();
       const month = now
         .toLocaleString("en-US", { month: "long" })
-        .toLowerCase(); // e.g., "may"
+        .toLowerCase();
 
       const stampStr = await AsyncStorage.getItem("stamps");
       const stamps = stampStr ? JSON.parse(stampStr) : {};
+
+      if (stamps[year]?.[month]) {
+        Alert.alert(
+          "Already Redeemed",
+          "You already have a stamp for this month."
+        );
+        return;
+      }
 
       if (!stamps[year]) {
         stamps[year] = {};
@@ -72,7 +87,7 @@ export default function Product() {
 
       await AsyncStorage.setItem("stamps", JSON.stringify(stamps));
 
-      Alert.alert("Success", "Your monthly stamp has been issued.");
+      Alert.alert("Stamp Purchased");
     } catch (err) {
       console.error("Error saving stamp:", err);
       Alert.alert(
@@ -82,11 +97,19 @@ export default function Product() {
     }
   };
 
+  if (isLoading) {
+    return (
+      <View style={styles.loadingContainer}>
+        <ActivityIndicator size="small" color="#265D5A" />
+      </View>
+    );
+  }
+
   if (!product || product.live === false) return null;
 
   return (
     <>
-      <Text style={styles.sectionTitle}>Product of the Month</Text>
+      <Text style={styles.sectionTitle}>Monthly Stamp</Text>
 
       <View style={styles.giftBox}>
         {product.img_url ? (
@@ -115,7 +138,7 @@ export default function Product() {
 
 const styles = StyleSheet.create({
   sectionTitle: {
-    fontSize: 20,
+    fontSize: 24,
     fontWeight: "700",
     color: "#333",
     marginVertical: 16,
@@ -157,5 +180,11 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: "bold",
     fontFamily: "Nunito",
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    paddingVertical: 60,
   },
 });

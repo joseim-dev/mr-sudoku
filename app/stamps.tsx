@@ -1,6 +1,14 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useRouter } from "expo-router";
 import React, { useEffect, useState } from "react";
-import { Image, ScrollView, StyleSheet, Text, View } from "react-native";
+import {
+  Image,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
 
 type StampsData = {
   [year: string]: {
@@ -10,6 +18,7 @@ type StampsData = {
 
 const Stamps = () => {
   const [stamps, setStamps] = useState<StampsData>({});
+  const router = useRouter();
 
   useEffect(() => {
     const loadStamps = async () => {
@@ -24,7 +33,8 @@ const Stamps = () => {
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
-      <Text style={styles.title}>Your Stamps</Text>
+      {/* 제목을 쓰고 싶다면 아래 주석 해제 */}
+      {/* <Text style={styles.title}>Your Stamps</Text> */}
 
       {Object.keys(stamps)
         .sort()
@@ -46,6 +56,14 @@ const Stamps = () => {
               ))}
           </View>
         ))}
+
+      <TouchableOpacity
+        style={styles.backButton}
+        onPress={() => router.back()}
+        activeOpacity={0.85}
+      >
+        <Text style={styles.backButtonText}>Back</Text>
+      </TouchableOpacity>
     </ScrollView>
   );
 };
@@ -102,5 +120,26 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     borderWidth: 1,
     borderColor: "#e0e0e0",
+  },
+  backButton: {
+    marginTop: 20,
+    marginBottom: 60,
+    backgroundColor: "#265D5A",
+    paddingVertical: 10,
+    borderRadius: 30,
+    alignItems: "center",
+    justifyContent: "center",
+    width: "100%",
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3,
+  },
+  backButtonText: {
+    color: "#fff",
+    fontSize: 20,
+    fontWeight: "700",
+    fontFamily: "Nunito",
   },
 });
