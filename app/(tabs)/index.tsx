@@ -10,6 +10,7 @@ import {
   Image,
   ImageBackground,
   Modal,
+  Platform,
   ScrollView,
   StyleSheet,
   Text,
@@ -137,7 +138,7 @@ export default function HomeScreen() {
           resizeMode="contain"
         />
       </View>
-      <View className="w-full h-[29%] pl-4">
+      <View className="w-full h-[29%] pl-4 ">
         {isSmallDevice ? (
           <View className="w-full h-full justify-end items-center">
             <Image
@@ -179,7 +180,7 @@ export default function HomeScreen() {
         </View>
       )}
 
-      <View className="w-full h-[22%] flex justify-end items-center pb-[40px] ">
+      <View className="w-full h-[22%] flex items-center justify-end android:h-[30%] pb-[40px]">
         {savedTime !== null && (
           <TouchableOpacity
             style={styles.continueButton}
@@ -202,7 +203,7 @@ export default function HomeScreen() {
           </Text>
         </TouchableOpacity>
       </View>
-      <View className="w-full h-[8%] " />
+      {Platform.OS === "android" ? <View className="w-full h-[8%] " /> : null}
 
       <Modal
         visible={modalVisible}
