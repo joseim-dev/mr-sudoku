@@ -6,7 +6,6 @@ import {
   ActivityIndicator,
   Alert,
   Image,
-  Linking,
   Platform,
   StyleSheet,
   Text,
@@ -18,6 +17,7 @@ export default function Product() {
   const [product, setProduct] = useState<any>(null);
   const [coins, setCoins] = useState<number>(0);
   const router = useRouter();
+
   useEffect(() => {
     const loadData = async () => {
       const [coinStr, data] = await Promise.all([
@@ -36,37 +36,49 @@ export default function Product() {
   }, []);
 
   const handleRedeem = async () => {
-    if (!product?.price) {
-      Alert.alert("Error", "상품 가격이 유효하지 않습니다.");
+    if (!product?.price || !product?.img_url) {
+      Alert.alert("Error", "Product information is invalid.");
       return;
     }
 
     if (coins < product.price) {
-      Alert.alert("Not enough Mustaches");
-    } else {
-      const updatedCoins = coins - product.price;
+      Alert.alert(
+        "Insufficient Mustaches",
+        "You don't have enough Mustaches to redeem this product."
+      );
+      return;
+    }
 
-      try {
-        await AsyncStorage.setItem("userCoins", updatedCoins.toString());
-        setCoins(updatedCoins);
+    const updatedCoins = coins - product.price;
 
-        Alert.alert(
-          "Purchased!",
-          "The link/promo code for the product is provided once.",
-          [
-            {
-              text: "Go see product",
-              onPress: () => {
-                Linking.openURL(product.link);
-                router.replace("/(tabs)");
-              },
-            },
-          ]
-        );
-      } catch (err) {
-        console.error("코인 차감 오류:", err);
-        Alert.alert("Error", "Please try again");
+    try {
+      await AsyncStorage.setItem("userCoins", updatedCoins.toString());
+      setCoins(updatedCoins);
+
+      const now = new Date();
+      const year = now.getFullYear().toString(); // e.g., "2025"
+      const month = now
+        .toLocaleString("en-US", { month: "long" })
+        .toLowerCase(); // e.g., "may"
+
+      const stampStr = await AsyncStorage.getItem("stamps");
+      const stamps = stampStr ? JSON.parse(stampStr) : {};
+
+      if (!stamps[year]) {
+        stamps[year] = {};
       }
+
+      stamps[year][month] = product.img_url;
+
+      await AsyncStorage.setItem("stamps", JSON.stringify(stamps));
+
+      Alert.alert("Success", "Your monthly stamp has been issued.");
+    } catch (err) {
+      console.error("Error saving stamp:", err);
+      Alert.alert(
+        "Error",
+        "Something went wrong during the purchase. Please try again."
+      );
     }
   };
 

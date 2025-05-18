@@ -3,6 +3,7 @@ import Product from "@/components/page/profile/Product";
 import { fetchMonthlyProducts } from "@/utils/fetchMonthlyProducts";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useFocusEffect } from "@react-navigation/native";
+import { useRouter } from "expo-router";
 import React, { useCallback, useEffect, useState } from "react";
 import {
   Image,
@@ -21,6 +22,7 @@ export default function SettingsScreen() {
   const [modalVisible, setModalVisible] = useState(false);
 
   const [products, setProducts] = useState([]);
+  const router = useRouter();
 
   useEffect(() => {
     const loadData = async () => {
@@ -96,6 +98,14 @@ export default function SettingsScreen() {
         </View>
 
         <Product />
+        <TouchableOpacity
+          style={styles.stampButton}
+          onPress={() => router.push("/stamps")}
+          activeOpacity={0.85}
+        >
+          <Text style={styles.stampButtonText}>See my stamps</Text>
+        </TouchableOpacity>
+
         <PasswordModal
           visible={modalVisible}
           onClose={() => setModalVisible(false)}
@@ -143,5 +153,20 @@ const styles = StyleSheet.create({
   mustacheIcon: {
     width: 24,
     height: 24,
+  },
+  stampButton: {
+    marginTop: 20,
+    backgroundColor: "#fff",
+    paddingVertical: 14,
+    paddingHorizontal: 24,
+    borderRadius: 12,
+    elevation: 3,
+    alignItems: "center",
+    width: "100%",
+  },
+  stampButtonText: {
+    fontSize: 16,
+    fontWeight: "700",
+    color: "#265D5A",
   },
 });

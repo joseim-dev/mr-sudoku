@@ -63,6 +63,22 @@ export default function RootLayout() {
               headerBackVisible: false, // ← 핵심! 🔥 뒤로가기 버튼 및 title 모두 제거
             }}
           />
+          <Stack.Screen
+            name="stamps"
+            options={{
+              headerStyle: {
+                backgroundColor: "#FDF6E5",
+              },
+              headerTitle: () => (
+                <Image
+                  source={require("../assets/images/mr_sudoku.png")}
+                  style={{ width: 160, height: 40, resizeMode: "contain" }}
+                />
+              ),
+              // headerLeft: () => null,
+              headerBackVisible: false,
+            }}
+          />
         </Stack>
         <StatusBar style="auto" />
       </ThemeProvider>

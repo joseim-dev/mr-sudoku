@@ -69,6 +69,16 @@ export default function TabLayout() {
           ),
         }}
       />
+
+      <Tabs.Screen
+        name="stamps"
+        options={{
+          title: "Stamps",
+          tabBarIcon: ({ color }) => (
+            <Ionicons size={28} name="file-tray-full" color={color} />
+          ),
+        }}
+      />
     </Tabs>
   );
 }
