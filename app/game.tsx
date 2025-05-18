@@ -341,7 +341,6 @@ export default function GameScreen() {
 
   return (
     <View style={styles.container}>
-      <View className="w-full  h-[4%]" />
       <View style={styles.headerRow}>
         <Text style={styles.headerText}>
           🔥 {difficultyLabel.toString().toUpperCase()}
@@ -352,14 +351,16 @@ export default function GameScreen() {
 
       {grid.length > 0 && (
         <>
-          <SudokuBoard
-            grid={grid}
-            selectedCell={selectedCell}
-            onCellSelect={handleCellSelect}
-            mistakeCells={mistakeCells}
-            memoGrid={memoGrid}
-            initialGrid={initialGrid}
-          />
+          <View className=" h-[58%] flex items-center">
+            <SudokuBoard
+              grid={grid}
+              selectedCell={selectedCell}
+              onCellSelect={handleCellSelect}
+              mistakeCells={mistakeCells}
+              memoGrid={memoGrid}
+              initialGrid={initialGrid}
+            />
+          </View>
           <View style={styles.topBar}>
             <TouchableOpacity onPress={handleUndo} style={styles.iconButton}>
               <Ionicons name="arrow-undo-outline" size={24} color="#6E6E6E" />
@@ -415,7 +416,9 @@ export default function GameScreen() {
               <Text style={styles.iconLabel}>Erase</Text>
             </TouchableOpacity>
           </View>
-          <NumberPad onSelectNumber={handleNumberSelect} />
+          <View style={{ height: "12%" }}>
+            <NumberPad onSelectNumber={handleNumberSelect} />
+          </View>
           <View style={styles.fabRow}>
             <TouchableOpacity
               style={styles.fab}
@@ -486,15 +489,17 @@ const styles = StyleSheet.create({
   headerRow: {
     flexDirection: "row",
     justifyContent: "space-between",
+    alignItems: "flex-end",
     marginBottom: 3,
+    height: "8%",
   },
   headerText: { fontSize: 16, color: "#444" },
   topBar: {
+    height: "10%", // or "12%"
     flexDirection: "row",
     justifyContent: "space-around",
-    marginTop: isSmallDevice ? 4 : 20,
-    marginBottom: isSmallDevice ? 8 : 40,
-    alignItems: "center",
+    alignItems: "flex-start",
+    marginTop: 4,
   },
   iconButton: {
     alignItems: "center",
@@ -505,14 +510,12 @@ const styles = StyleSheet.create({
     color: "#6E6E6E",
   },
   fabRow: {
-    position: "absolute",
-    bottom: isSmallDevice ? 15 : 35,
-    left: 16,
-    right: 16,
+    height: "14%",
     flexDirection: "row",
     justifyContent: "space-between",
-    alignItems: "center",
-    height: isSmallDevice ? 50 : 60,
+    alignItems: "flex-start",
+    paddingHorizontal: 16,
+    marginTop: 8,
   },
   fab: {
     width: "82%",
