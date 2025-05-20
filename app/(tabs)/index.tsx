@@ -195,7 +195,10 @@ export default function HomeScreen() {
 
         <TouchableOpacity
           className="w-[85%] h-[50px] bg-[#265D5A] rounded-full items-center justify-center shadow-md"
-          onPress={handleStartGame}
+          // onPress={handleStartGame}
+          onPress={() => {
+            router.push("/(games)/wordRush");
+          }}
           activeOpacity={0.9}
         >
           <Text className="text-white text-[18px] font-bold font-[Nunito]">

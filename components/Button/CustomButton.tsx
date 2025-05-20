@@ -14,7 +14,9 @@ const CustomButton: React.FC<CustomButtonProps> = ({ label, onPress }) => {
       onPress={onPress}
       activeOpacity={0.8}
     >
-      <Text className="text-white text-lg font-bold font-nunito">{label}</Text>
+      <Text className="text-white text-[18px] font-bold font-nunito">
+        {label}
+      </Text>
     </TouchableOpacity>
   );
 };
