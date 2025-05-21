@@ -5,7 +5,7 @@ export default function GamesLayout() {
   return (
     <Stack
       screenOptions={{
-        headerShown: false,
+        headerShown: true,
         headerStyle: { backgroundColor: "#1e1e1e" },
         headerTintColor: "#fff",
         headerTitleAlign: "center",
@@ -14,22 +14,11 @@ export default function GamesLayout() {
       <Stack.Screen
         name="wordRush"
         options={{
-          headerStyle: {
-            backgroundColor: "#FDF6E5",
-          },
-          headerTitle: () => (
-            <Image
-              source={require("@/assets/images/mr_sudoku.png")}
-              style={{ width: 160, height: 40, resizeMode: "contain" }}
-            />
-          ),
-          headerLeft: () => null, // ← 🔥 완전히 제거!
-          headerBackVisible: false, // ← 핵심! 🔥 뒤로가기 버튼 및 title 모두 제거
+          headerShown: false,
         }}
       />
-
       <Stack.Screen
-        name="index"
+        name="sudoku"
         options={{
           headerStyle: {
             backgroundColor: "#FDF6E5",

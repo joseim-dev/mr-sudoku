@@ -1,9 +1,8 @@
-import CustomButton from "@/components/Button/CustomButton";
 import WordRushButton from "@/components/page/games/wordRush/WordRushButton";
 import * as Haptics from "expo-haptics";
 import { useRouter } from "expo-router";
 import { useEffect, useState } from "react";
-import { Image, Text, View } from "react-native";
+import { Text, TouchableOpacity, View } from "react-native";
 import * as Animatable from "react-native-animatable";
 
 // 셔플 함수
@@ -18,26 +17,26 @@ const shuffleArray = (array: string[]): string[] => {
 
 // 단어 리스트 (mock)
 const wordList = [
-  "planet",
-  "object",
-  "bridge",
-  "market",
-  "school",
-  "wonder",
-  "signal",
-  "random",
-  "travel",
-  "beauty",
-  "forest",
-  "strong",
-  "silent",
-  "castle",
-  "player",
-  "circle",
-  "yellow",
-  "silver",
-  "orange",
-  "street",
+  "moon",
+  "love",
+  "star",
+  "game",
+  "ring",
+  "book",
+  "tree",
+  "fish",
+  "bird",
+  "fire",
+  "cake",
+  "snow",
+  "milk",
+  "wind",
+  "ship",
+  "road",
+  "blue",
+  "gold",
+  "hill",
+  "home",
 ];
 
 export default function WordRushScreen() {
@@ -110,12 +109,7 @@ export default function WordRushScreen() {
   return (
     <View className="flex-1 bg-[#FDF6E5]">
       {/* 상단 로고 */}
-      <View className="w-full h-[11%] items-center justify-end pb-1">
-        <Image
-          source={require("@/assets/images/mr_sudoku.png")}
-          style={{ width: 160, height: 40, resizeMode: "contain" }}
-        />
-      </View>
+      <View className="w-full h-[11%] items-center justify-end pb-1"></View>
 
       {/* Streak & Timer (예시용 정적) */}
       <View className="w-full h-[12%] justify-end">
@@ -130,7 +124,7 @@ export default function WordRushScreen() {
       {/* 정답 영역 */}
       <View className="w-full h-[30%] justify-center items-center">
         {selectedIndexes.length === 0 ? (
-          <Text className="text-[28px] font-[Nunito] text-gray-400 italic">
+          <Text className="text-[30px] font-[Nunito] text-gray-400 italic">
             What's the word?
           </Text>
         ) : (
@@ -145,30 +139,22 @@ export default function WordRushScreen() {
             duration={600}
             iterationCount={1}
           >
-            <Animatable.View
-              animation={
-                feedbackAnim === "correct"
-                  ? "pulse"
-                  : feedbackAnim === "wrong"
-                  ? "shake"
-                  : undefined
-              }
-              duration={600}
-              iterationCount={1}
-            >
-              <View className="flex-row justify-center items-center gap-x-3">
-                {Array.from({ length: wordLength }).map((_, idx) => (
-                  <Text
-                    key={idx}
-                    className={`text-[42px] font-[Nunito] font-bold ${
-                      feedbackAnim === "wrong" ? "text-red-600" : "text-black"
-                    }`}
-                  >
-                    {selectedChar(idx)}
-                  </Text>
-                ))}
-              </View>
-            </Animatable.View>
+            <View className="flex-row justify-center items-center gap-x-3">
+              {Array.from({ length: wordLength }).map((_, idx) => (
+                <Text
+                  key={idx}
+                  className={`text-[44px] font-[Nunito] font-bold ${
+                    feedbackAnim === "wrong"
+                      ? "text-red-600"
+                      : feedbackAnim === "correct"
+                      ? "text-green-600"
+                      : "text-black"
+                  }`}
+                >
+                  {selectedChar(idx)}
+                </Text>
+              ))}
+            </View>
           </Animatable.View>
         )}
       </View>
@@ -214,7 +200,7 @@ export default function WordRushScreen() {
       <View className="w-full h-[8%] justify-start items-center">
         <Text
           onPress={() => setSelectedIndexes([])}
-          className="text-center text-[24px] text-underline font-[Nunito] font-medium text-gray-600 mt-[2%]"
+          className="text-center text-[24px] text-underline font-[Nunito] font-medium text-gray-600"
         >
           clear
         </Text>
@@ -222,9 +208,14 @@ export default function WordRushScreen() {
 
       {/* 하단 Exit 버튼만 유지 */}
       <View className="w-full h-[13%] justify-center items-center">
-        <View className="w-[60%]">
-          <CustomButton label="Exit" onPress={() => router.back()} />
-        </View>
+        <TouchableOpacity
+          className="w-[60%] bg-[#246965] rounded-xl h-[50px] items-center justify-center "
+          onPress={() => router.back()}
+        >
+          <Text className="font-[nunito] text-[24px] text-white font-bold">
+            Exit
+          </Text>
+        </TouchableOpacity>
       </View>
     </View>
   );

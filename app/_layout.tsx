@@ -72,6 +72,12 @@ export default function RootLayout() {
             }}
           />
           <Stack.Screen
+            name="gameLobby"
+            options={{
+              headerShown: false,
+            }}
+          />
+          <Stack.Screen
             name="stamps"
             options={{
               headerStyle: {
