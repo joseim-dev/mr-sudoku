@@ -19,7 +19,6 @@ export default function HomeScreen() {
           MUSTACHE
         </Text>
       </View>
-      <View className="h-[28%] w-full "></View>
       <View className="h-[30%] w-full flex-row items-center justify-center android:h-[34%] px-2 gap-[2%]">
         <GameCard
           title="MR.SUDOKU"
@@ -35,6 +34,8 @@ export default function HomeScreen() {
           gameName="wordRush"
         />
       </View>
+      <View className="h-[28%] w-full "></View>
+
       {Platform.OS === "ios" ? (
         <View className="w-full h-[6%] bg-slate-500" />
       ) : null}

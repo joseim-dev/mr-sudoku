@@ -26,3 +26,9 @@ export const interstitialAdId2 = __DEV__
   : Platform.OS === "ios"
   ? "ca-app-pub-7270360511167481/8024387685"
   : "ca-app-pub-7270360511167481/1662175220";
+
+export const WordRushRewardedAdId = __DEV__
+  ? TestIds.REWARDED
+  : Platform.OS === "ios"
+  ? "ca-app-pub-7270360511167481/7326082369"
+  : "ca-app-pub-7270360511167481/5719149350";

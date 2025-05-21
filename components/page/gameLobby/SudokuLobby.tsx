@@ -28,7 +28,7 @@ export default function SudokuLobby() {
     ]);
     await AsyncStorage.setItem("sudokuDifficulty", base);
     await AsyncStorage.setItem("sudokuDifficultyLabel", key);
-    router.push("/(games)/wordRush");
+    router.push("/(games)/sudoku");
   };
 
   return (
