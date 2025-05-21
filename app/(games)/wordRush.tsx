@@ -244,7 +244,7 @@ export default function WordRushScreen() {
             }}
             className="mt-4"
           >
-            <Text className="text-[20px] font-[Nunito] text-[#888] italic mt-[8px]">
+            <Text className="text-[20px] font-[Nunito] text-[#888] italic mt-[16px]">
               {showHint ? hint : "Tap for hint"}
             </Text>
           </TouchableOpacity>

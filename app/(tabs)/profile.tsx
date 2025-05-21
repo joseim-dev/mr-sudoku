@@ -54,7 +54,7 @@ export default function SettingsScreen() {
           activeOpacity={0.99}
         >
           <Image
-            source={require("../../assets/images/mr_sudoku.png")}
+            source={require("../../assets/images/mustache.png")}
             style={styles.titleImage}
             resizeMode="contain"
           />

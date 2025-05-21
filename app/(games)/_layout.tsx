@@ -25,7 +25,7 @@ export default function GamesLayout() {
           },
           headerTitle: () => (
             <Image
-              source={require("@/assets/images/mr_sudoku.png")}
+              source={require("@/assets/images/mustache.png")}
               style={{ width: 160, height: 40, resizeMode: "contain" }}
             />
           ),

@@ -10,6 +10,8 @@
     "newArchEnabled": true,
     "ios": {
       "supportsTablet": false,
+      "icon": "./assets/images/icon-ios.png",
+
       "bundleIdentifier": "com.mr.sudoku",
       "infoPlist": {
         "NSUserTrackingUsageDescription": "This identifier will be used to deliver personalized ads to you.",
@@ -17,6 +19,7 @@
       }
     },
     "android": {
+      "icon": "./assets/images/icon-android.png",
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#FDF5E5"
@@ -42,7 +45,7 @@
       [
         "expo-splash-screen",
         {
-          "image": "./assets/images/splash-icon.png",
+          "image": "./assets/images/mustache.png",
           "imageWidth": 200,
           "resizeMode": "contain",
           "backgroundColor": "#FCF7E7"

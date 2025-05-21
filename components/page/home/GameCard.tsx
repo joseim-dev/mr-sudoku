@@ -1,4 +1,5 @@
 import { useRouter } from "expo-router";
+import { requestTrackingPermissionsAsync } from "expo-tracking-transparency";
 import React from "react";
 import {
   ImageBackground,
@@ -33,6 +34,8 @@ export default function GameCard({
       pathname: "/gameLobby/[gameName]",
       params: { gameName },
     });
+
+    requestTrackingPermissionsAsync();
   };
   return (
     <TouchableOpacity
