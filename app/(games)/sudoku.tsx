@@ -141,7 +141,7 @@ export default function GameScreen() {
   const showGameOverAlert = () => {
     Alert.alert("Game Over", "You made 3 mistakes!", [
       {
-        text: "Get one more chance",
+        text: "Second Chance? (Ad)",
         onPress: () => {
           if (isLoaded) {
             show();

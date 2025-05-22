@@ -16,7 +16,7 @@ export const fetchWordList = async (): Promise<string[]> => {
   const length = Number(stored);
   if (!isNaN(length)) {
     const randomWords = generate({
-      exactly: 400,
+      exactly: 1000,
       minLength: length,
       maxLength: length,
       wordsPerString: 1,

@@ -352,7 +352,7 @@ export default function WordRushScreen() {
                   onPress={handleOneMoreChance}
                 >
                   <Text className="text-white text-center font-bold text-[16px]">
-                    One More Chance?
+                    Second Chance? (Ad)
                   </Text>
                 </TouchableOpacity>
                 <TouchableOpacity

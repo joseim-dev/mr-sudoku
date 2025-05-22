@@ -18,5 +18,5 @@ export const wordRushRewardedAdId = __DEV__
 export const gameStartAdId = __DEV__
   ? TestIds.INTERSTITIAL
   : Platform.OS === "ios"
-  ? "ca-app-pub-7270360511167481/8940801963"
-  : "ca-app-pub-7270360511167481/8269883978";
+  ? "ca-app-pub-7270360511167481/2466585466"
+  : "ca-app-pub-7270360511167481/4229199637";
