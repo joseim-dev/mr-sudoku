@@ -78,13 +78,13 @@ const styles = StyleSheet.create({
     backgroundColor: "#fdd",
   },
   cellText: {
-    fontSize: 26,
-    fontWeight: "300",
+    fontSize: 28,
+    fontWeight: "400",
     color: "#000",
   },
   userCorrectCell: {
     color: "#1A5CD7",
-    fontWeight: "500",
+    fontWeight: "600",
   },
   memoContainer: {
     flexDirection: "row",

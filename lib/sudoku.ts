@@ -19,12 +19,12 @@ interface DifficultyConfig {
 }
 
 const difficultyConfigs: Record<Difficulty, DifficultyConfig> = {
-  easy: { cellsToRemove: 30, minClues: 50, allowAdvancedPatterns: false },
-  normal: { cellsToRemove: 36, minClues: 45, allowAdvancedPatterns: false },
-  medium: { cellsToRemove: 42, minClues: 40, allowAdvancedPatterns: true },
-  hard: { cellsToRemove: 48, minClues: 35, allowAdvancedPatterns: true },
-  extreme: { cellsToRemove: 54, minClues: 30, allowAdvancedPatterns: true },
-  master: { cellsToRemove: 60, minClues: 25, allowAdvancedPatterns: true },
+  easy: { cellsToRemove: 35, minClues: 50, allowAdvancedPatterns: false },
+  normal: { cellsToRemove: 40, minClues: 45, allowAdvancedPatterns: false },
+  medium: { cellsToRemove: 45, minClues: 40, allowAdvancedPatterns: true },
+  hard: { cellsToRemove: 57, minClues: 35, allowAdvancedPatterns: true },
+  extreme: { cellsToRemove: 63, minClues: 30, allowAdvancedPatterns: true },
+  master: { cellsToRemove: 69, minClues: 25, allowAdvancedPatterns: true },
 };
 
 // 유틸리티 함수들
@@ -266,7 +266,7 @@ export const SudokuGenerator = {
    */
   generatePuzzle(difficultyInput: string = "easy"): Grid {
     // 난이도 검증 및 설정
-    let difficulty: Difficulty = "easy";
+    let difficulty: Difficulty = "medium";
     if (SudokuUtils.isDifficulty(difficultyInput)) {
       difficulty = difficultyInput;
     } else {

@@ -1,33 +1,31 @@
-import { Ionicons } from "@expo/vector-icons";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useRouter } from "expo-router";
 import { usePostHog } from "posthog-react-native";
 import React, { useEffect, useState } from "react";
 
 import * as Haptics from "expo-haptics";
-import {
-  Alert,
-  Dimensions,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-} from "react-native";
+import { Alert, Image, useWindowDimensions, View } from "react-native";
 
 import ConfettiCannon from "react-native-confetti-cannon";
 
 import RewardModal from "@/components/Modal/RewardModal";
 import NumberPad from "@/components/NumberPad";
+import SudokuButton from "@/components/page/games/sudoku/SudokuButton";
+import SudokuToolBar from "@/components/page/games/sudoku/SudokuToolBar";
 import SudokuBoard from "@/components/SudokuBoard";
 import { sudokuRewardedAdId } from "@/constants/adIds";
 import { generatePuzzle, Grid, solveSudoku } from "@/lib/sudoku";
 import { calculateReward } from "@/utils/game/reward";
 import { formatTime } from "@/utils/game/time";
 import { checkPuzzleComplete } from "@/utils/game/validation";
+import { Ionicons } from "@expo/vector-icons";
 import { useRewardedAd } from "react-native-google-mobile-ads";
 
 export default function GameScreen() {
   const posthog = usePostHog();
+  const { height } = useWindowDimensions();
+
+  const isSmallDevice = height < 700;
 
   const router = useRouter();
   const [showRewardModal, setShowRewardModal] = useState(false);
@@ -38,6 +36,7 @@ export default function GameScreen() {
 
   const [showConfetti, setShowConfetti] = useState(false);
   const [history, setHistory] = useState<Grid[]>([]);
+  const [isGridFilled, setIsGridFilled] = useState(false);
 
   const { isLoaded, isClosed, load, show, isEarnedReward } =
     useRewardedAd(sudokuRewardedAdId);
@@ -72,6 +71,9 @@ export default function GameScreen() {
     });
   };
 
+  const isAllFilled = (grid: Grid): boolean => {
+    return grid.every((row) => row.every((cell) => cell !== null));
+  };
   useEffect(() => {
     if (isClosed && isEarnedReward) {
       setMistakeCount((prev) => (prev > 0 ? prev - 1 : 0));
@@ -82,6 +84,11 @@ export default function GameScreen() {
   useEffect(() => {
     load();
   }, [load]);
+  useEffect(() => {
+    if (grid.length > 0) {
+      setIsGridFilled(isAllFilled(grid));
+    }
+  }, [grid]);
 
   useEffect(() => {
     if (isClosed && isEarnedReward) {
@@ -294,122 +301,75 @@ export default function GameScreen() {
   };
 
   return (
-    <View style={styles.container}>
-      <View style={styles.headerRow}>
-        <Text style={styles.headerText}>
-          🔥 {difficultyLabel.toString().toUpperCase()}
-        </Text>
-        <Text style={styles.headerText}>Mistake: {mistakeCount}/3</Text>
-        <Text style={styles.headerText}>Time: {formatTime(time)}</Text>
+    <View className="flex-1 bg-[#FDF7E7] justify-start px-[1.5%]">
+      <View className="w-full h-[10%] flex-row justify-between items-end ">
+        <Ionicons
+          name="chevron-back-outline"
+          size={28}
+          color="#265D5A"
+          onPress={() => {
+            router.back();
+            saveGameState();
+          }}
+        />
+        <Image
+          source={require("@/assets/images/mustache.png")}
+          style={{ width: 120, height: 30, resizeMode: "contain" }}
+        />
+        <View className="w-[24px]" />
       </View>
-
       {grid.length > 0 && (
-        <>
-          <View className=" h-[58%] flex items-center">
-            <SudokuBoard
-              grid={grid}
-              selectedCell={selectedCell}
-              onCellSelect={handleCellSelect}
-              mistakeCells={mistakeCells}
-              memoGrid={memoGrid}
-              initialGrid={initialGrid}
-            />
-          </View>
-          <View style={styles.topBar}>
-            <TouchableOpacity onPress={handleUndo} style={styles.iconButton}>
-              <Ionicons name="arrow-undo-outline" size={24} color="#6E6E6E" />
-              <Text style={styles.iconLabel}>Undo</Text>
-            </TouchableOpacity>
-            <TouchableOpacity onPress={handleHint} style={styles.iconButton}>
-              <View style={{ position: "relative" }}>
-                <Ionicons
-                  name="bulb-outline"
-                  size={24}
-                  color={hintCount > 0 ? "#6E6E6E" : "#aaa"}
-                />
-                <View
-                  style={{
-                    position: "absolute",
-                    top: -6,
-                    right: -10,
-                    backgroundColor: "#FF6D00",
-                    borderRadius: 20,
-                    paddingHorizontal: 0,
-                    width: 16,
-                    height: 16,
-                    justifyContent: "center",
-                    alignItems: "center",
-                  }}
-                >
-                  <Text
-                    style={{ color: "white", fontSize: 8, fontWeight: "bold" }}
-                  >
-                    {hintCount > 0 ? hintCount : "AD"}
-                  </Text>
-                </View>
-              </View>
-              <Text style={styles.iconLabel}>Hint</Text>
-            </TouchableOpacity>
-
-            <TouchableOpacity
-              onPress={() => setMemoMode((prev) => !prev)}
-              style={styles.iconButton}
-            >
-              <Ionicons
-                name="pencil-outline"
-                size={24}
-                color={memoMode ? "#007AFF" : "#6E6E6E"}
+        <View className="flex-1 justify-between h-[90%] ">
+          <View className="w-full h-[5%]" />
+          <View className=" h-[85%] w-full  ">
+            <View className=" w-full h-fit ">
+              <SudokuBoard
+                grid={grid}
+                selectedCell={selectedCell}
+                onCellSelect={handleCellSelect}
+                mistakeCells={mistakeCells}
+                memoGrid={memoGrid}
+                initialGrid={initialGrid}
+                difficultyLabel={difficultyLabel}
+                mistakeCount={mistakeCount}
+                time={time}
+                formatTime={formatTime}
               />
-              <Text style={styles.iconLabel}>Memo</Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              onPress={() => handleNumberSelect(null)}
-              style={styles.iconButton}
-            >
-              <Ionicons name="backspace-outline" size={24} color="#6E6E6E" />
-              <Text style={styles.iconLabel}>Erase</Text>
-            </TouchableOpacity>
-          </View>
-          <View style={{ height: "12%" }}>
-            <NumberPad onSelectNumber={handleNumberSelect} />
-          </View>
-          <View style={styles.fabRow}>
-            <TouchableOpacity
-              style={styles.fab}
-              onPress={handleSubmit}
-              activeOpacity={0.9}
-            >
-              <Text style={styles.fabText}>Mustache!</Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={styles.exitButton}
-              onPress={async () => {
-                await saveGameState();
-                router.push("/(tabs)");
+            </View>
+            <View className="h-[20%] flex justify-center">
+              <SudokuToolBar
+                hintCount={hintCount}
+                memoMode={memoMode}
+                handleUndo={handleUndo}
+                handleHint={handleHint}
+                setMemoMode={setMemoMode}
+                handleNumberSelect={handleNumberSelect}
+              />
+            </View>
 
-                // if (isLoaded4) {
-                //   show4();
-                // } else {
-                //   router.push("/(tabs)");
-                // }
-              }}
-            >
-              <Ionicons name="exit-outline" size={26} color="#F28B82" />
-            </TouchableOpacity>
+            <View className="h-fit flex justify-start">
+              <NumberPad onSelectNumber={handleNumberSelect} />
+            </View>
           </View>
-          {/* <TouchableOpacity
-            style={styles.debugButton}
-            onPress={handleAutoComplete}
-          >
-            <Text style={styles.debugText}>Auto Complete</Text>
-          </TouchableOpacity> */}
-          {/* <TouchableOpacity
-            style={styles.debugButton}
-            onPress={handleAutoComplete}
-          >
-            <Text style={styles.debugText}>Auto Complete</Text>
-          </TouchableOpacity> */}
-        </>
+
+          <View className="h-[10%]">
+            {isSmallDevice ? (
+              isGridFilled ? (
+                <SudokuButton
+                  isSmallDevice={isSmallDevice}
+                  handleSubmit={handleSubmit}
+                  saveGameState={saveGameState}
+                />
+              ) : null
+            ) : (
+              <SudokuButton
+                isSmallDevice={isSmallDevice}
+                handleSubmit={handleSubmit}
+                saveGameState={saveGameState}
+              />
+            )}
+          </View>
+        </View>
       )}
 
       {showConfetti && (
@@ -435,94 +395,3 @@ export default function GameScreen() {
     </View>
   );
 }
-
-const screenHeight = Dimensions.get("window").height;
-const isSmallDevice = screenHeight < 700; // iPhone SE 등
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    padding: 10,
-    backgroundColor: "#FDF7E7",
-    justifyContent: "flex-start",
-  },
-  headerRow: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "flex-end",
-    marginBottom: 3,
-    height: "6%",
-  },
-  headerText: { fontSize: 16, color: "#444" },
-  topBar: {
-    height: "10%", // or "12%"
-    flexDirection: "row",
-    justifyContent: "space-around",
-    alignItems: "flex-start",
-    marginTop: 4,
-  },
-  iconButton: {
-    alignItems: "center",
-  },
-  iconLabel: {
-    fontSize: 12,
-    marginTop: 4,
-    color: "#6E6E6E",
-  },
-  fabRow: {
-    height: "16%",
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "flex-start",
-    paddingHorizontal: 16,
-    paddingTop: 8,
-  },
-  fab: {
-    width: "82%",
-    backgroundColor: "#265D5A",
-    height: isSmallDevice ? 40 : 50,
-    borderRadius: 30,
-    alignItems: "center",
-    justifyContent: "center",
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.3,
-    shadowRadius: 4,
-    elevation: 6,
-  },
-  fabText: {
-    color: "#fff",
-    fontSize: isSmallDevice ? 16 : 18,
-    fontWeight: "bold",
-    fontFamily: "Nunito",
-  },
-  exitButton: {
-    width: isSmallDevice ? 45 : 50,
-    height: isSmallDevice ? 45 : 50,
-    borderRadius: 100,
-    borderWidth: 2,
-    borderColor: "#F28B82",
-    backgroundColor: "#FDF7E7",
-    justifyContent: "center",
-    alignItems: "center",
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.1,
-    shadowRadius: 2,
-    elevation: 3,
-  },
-  debugButton: {
-    position: "absolute",
-    bottom: 90,
-    left: 16,
-    right: 16,
-    backgroundColor: "#bbb",
-    borderRadius: 20,
-    paddingVertical: 10,
-    alignItems: "center",
-  },
-  debugText: {
-    color: "#fff",
-    fontWeight: "600",
-  },
-});

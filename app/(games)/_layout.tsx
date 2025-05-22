@@ -20,6 +20,7 @@ export default function GamesLayout() {
       <Stack.Screen
         name="sudoku"
         options={{
+          headerShown: false,
           headerStyle: {
             backgroundColor: "#FDF6E5",
           },

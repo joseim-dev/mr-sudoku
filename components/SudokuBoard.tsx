@@ -1,5 +1,5 @@
 import React, { useEffect, useRef } from "react";
-import { Animated, StyleSheet, View } from "react-native";
+import { Animated, Text, View } from "react-native";
 import SudokuCell from "./SudokuCell"; // 새로운 셀 컴포넌트
 
 type Grid = (number | null)[][];
@@ -11,6 +11,10 @@ type Props = {
   mistakeCells?: { row: number; col: number }[];
   memoGrid?: number[][][];
   initialGrid?: Grid;
+  difficultyLabel: string;
+  mistakeCount: number;
+  time: number;
+  formatTime: (time: number) => string;
 };
 
 function SudokuBoard({
@@ -20,6 +24,10 @@ function SudokuBoard({
   mistakeCells = [],
   memoGrid = [],
   initialGrid,
+  difficultyLabel,
+  mistakeCount,
+  time,
+  formatTime,
 }: Props) {
   const shakeAnim = useRef(new Animated.Value(0)).current;
 
@@ -46,80 +54,68 @@ function SudokuBoard({
   }, [mistakeCells]);
 
   return (
-    <Animated.View
-      style={[styles.board, { transform: [{ translateX: shakeAnim }] }]}
-    >
-      {grid.map((row, rowIndex) => (
-        <View key={rowIndex} style={styles.row}>
-          {row.map((value, colIndex) => {
-            const selected =
-              selectedCell?.row === rowIndex && selectedCell?.col === colIndex;
-            const isMistake = mistakeCells.some(
-              (cell) => cell.row === rowIndex && cell.col === colIndex
-            );
-
-            return (
-              <SudokuCell
-                key={`${rowIndex}-${colIndex}`}
-                value={value}
-                row={rowIndex}
-                col={colIndex}
-                selected={selected}
-                isMistake={isMistake}
-                onSelect={onCellSelect}
-                notes={memoGrid?.[rowIndex]?.[colIndex] || []}
-                initialValue={initialGrid?.[rowIndex]?.[colIndex]}
-              />
-            );
-          })}
-        </View>
-      ))}
-      <View style={StyleSheet.absoluteFill}>
-        {[1, 2].map((i) => (
-          <View
-            key={`h-${i}`}
-            style={{
-              position: "absolute",
-              top: `${(i * 100) / 3}%`,
-              left: 0,
-              right: 0,
-              height: 2,
-              backgroundColor: "#424550",
-            }}
-          />
-        ))}
-        {[1, 2].map((i) => (
-          <View
-            key={`v-${i}`}
-            style={{
-              position: "absolute",
-              left: `${(i * 100) / 3}%`,
-              top: 0,
-              bottom: 0,
-              width: 2,
-              backgroundColor: "#424550",
-            }}
-          />
-        ))}
+    <View className="w-full h-fit flex justify-center">
+      <View className="flex-row justify-between items-end mb-1.5 h-fit">
+        <Text className="text-[16px] text-[#444]">
+          🔥 {difficultyLabel.toString().toUpperCase()}
+        </Text>
+        <Text className="text-[16px] text-[#444]">
+          Mistake: {mistakeCount}/3
+        </Text>
+        <Text className="text-[16px] text-[#444]">
+          Time: {formatTime(time)}
+        </Text>
       </View>
-    </Animated.View>
+      <Animated.View
+        className="w-full aspect-square border-2 border-[#424550] bg-[#FDF6E5]"
+        style={{ transform: [{ translateX: shakeAnim }] }}
+      >
+        {grid.map((row, rowIndex) => (
+          <View key={rowIndex} className="flex-row flex-1">
+            {row.map((value, colIndex) => {
+              const selected =
+                selectedCell?.row === rowIndex &&
+                selectedCell?.col === colIndex;
+              const isMistake = mistakeCells.some(
+                (cell) => cell.row === rowIndex && cell.col === colIndex
+              );
+
+              return (
+                <SudokuCell
+                  key={`${rowIndex}-${colIndex}`}
+                  value={value}
+                  row={rowIndex}
+                  col={colIndex}
+                  selected={selected}
+                  isMistake={isMistake}
+                  onSelect={onCellSelect}
+                  notes={memoGrid?.[rowIndex]?.[colIndex] || []}
+                  initialValue={initialGrid?.[rowIndex]?.[colIndex]}
+                />
+              );
+            })}
+          </View>
+        ))}
+
+        <View className="absolute inset-0">
+          {[1, 2].map((i) => (
+            <View
+              key={`h-${i}`}
+              className="absolute left-0 right-0 h-[2px] bg-[#424550]"
+              style={{ top: `${(i * 100) / 3}%` }}
+            />
+          ))}
+          {[1, 2].map((i) => (
+            <View
+              key={`v-${i}`}
+              className="absolute top-0 bottom-0 w-[2px] bg-[#424550]"
+              style={{ left: `${(i * 100) / 3}%` }}
+            />
+          ))}
+        </View>
+      </Animated.View>
+    </View>
   );
 }
 
 export default React.memo(SudokuBoard);
-
-const styles = StyleSheet.create({
-  board: {
-    aspectRatio: 1,
-    width: "100%",
-    borderColor: "#424550",
-    borderWidth: 2,
-    marginVertical: 5,
-    marginBottom: 20,
-    backgroundColor: "#FDF6E5",
-  },
-  row: {
-    flexDirection: "row",
-    flex: 1,
-  },
-});
