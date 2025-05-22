@@ -1,7 +1,6 @@
 import wordDataRaw from "@/assets/data/filtered_words_dictionary.json";
 import WordRushButton from "@/components/page/games/wordRush/WordRushButton";
 import { wordRushRewardedAdId } from "@/constants/adIds";
-import { LETTER_TIMER_MAP } from "@/constants/wordRushTimer";
 import { fetchWordList, shuffleArray } from "@/utils/wordRush/wordUtils";
 import { Ionicons } from "@expo/vector-icons";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -19,50 +18,43 @@ const STREAK_TIMER_CONFIG: Record<
     baseTime: number;
     streakInterval: number; // 몇 streak마다 시간 변경
     timeReduction: number; // 각 interval마다 감소할 시간
-    fixedStreakThreshold: number; // 고정 시간 적용 streak 기준
-    fixedTime: number; // 고정 시간
+
     minimumTime: number; // 최소 시간
   }
 > = {
   4: {
-    baseTime: 15,
-    streakInterval: 1,
-    timeReduction: 1,
-    fixedStreakThreshold: 50,
-    fixedTime: 5,
-    minimumTime: 3,
+    baseTime: 20,
+    streakInterval: 10,
+    timeReduction: 2,
+    minimumTime: 10,
   },
   5: {
     baseTime: 30,
-    streakInterval: 8,
-    timeReduction: 3,
-    fixedStreakThreshold: 40,
-    fixedTime: 8,
-    minimumTime: 5,
+    streakInterval: 10,
+    timeReduction: 2,
+
+    minimumTime: 20,
   },
   6: {
     baseTime: 40,
-    streakInterval: 12,
+    streakInterval: 10,
     timeReduction: 2,
-    fixedStreakThreshold: 60,
-    fixedTime: 10,
-    minimumTime: 6,
+
+    minimumTime: 30,
   },
   7: {
     baseTime: 50,
     streakInterval: 10,
     timeReduction: 3,
-    fixedStreakThreshold: 50,
-    fixedTime: 12,
-    minimumTime: 8,
+
+    minimumTime: 30,
   },
   8: {
     baseTime: 60,
-    streakInterval: 15,
-    timeReduction: 4,
-    fixedStreakThreshold: 45,
-    fixedTime: 15,
-    minimumTime: 10,
+    streakInterval: 10,
+    timeReduction: 3,
+
+    minimumTime: 30,
   },
 };
 
@@ -97,27 +89,17 @@ export default function WordRushScreen() {
   const [reductionInfo, setReductionInfo] = useState<string | null>(null);
 
   // 타이머 계산 함수 (설정 객체 사용)
-  const getTimerForWord = (wordLength: number, currentStreak: number) => {
-    // 설정이 없는 글자 수는 기본값 사용
+  const getTimerForWord = (wordLength: number, score: number) => {
     const config = STREAK_TIMER_CONFIG[wordLength] || {
-      baseTime: LETTER_TIMER_MAP[wordLength] ?? 10,
+      baseTime: 10,
       streakInterval: 10,
-      timeReduction: 2,
-      fixedStreakThreshold: 50,
-      fixedTime: 5,
-      minimumTime: 3,
+      timeReduction: 1,
+      minimumTime: 5,
     };
 
-    // 고정 시간 적용 기준을 넘었으면 고정 시간 반환
-    if (currentStreak >= config.fixedStreakThreshold) {
-      return config.fixedTime;
-    }
-
-    // streak interval마다 시간 감소
-    const reductionCount = Math.floor(currentStreak / config.streakInterval);
+    const reductionCount = Math.floor(score / config.streakInterval);
     const reducedTime = config.baseTime - reductionCount * config.timeReduction;
 
-    // 최소 시간 보장
     return Math.max(reducedTime, config.minimumTime);
   };
 

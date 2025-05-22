@@ -4,7 +4,13 @@ import { usePostHog } from "posthog-react-native";
 import React, { useEffect, useState } from "react";
 
 import * as Haptics from "expo-haptics";
-import { Alert, Image, useWindowDimensions, View } from "react-native";
+import {
+  ActivityIndicator,
+  Alert,
+  Image,
+  useWindowDimensions,
+  View,
+} from "react-native";
 
 import ConfettiCannon from "react-native-confetti-cannon";
 
@@ -321,7 +327,7 @@ export default function GameScreen() {
         />
         <View className="w-[24px]" />
       </View>
-      {grid.length > 0 && (
+      {grid.length > 0 ? (
         <View className="flex-1 justify-between h-[90%] ">
           <View className="w-full h-[5%]" />
           <View className=" h-[85%] w-full  ">
@@ -373,6 +379,10 @@ export default function GameScreen() {
               />
             )}
           </View>
+        </View>
+      ) : (
+        <View className="w-full h-full justify-center items-center">
+          <ActivityIndicator size={"large"} color={"#1B4529"} />
         </View>
       )}
 
