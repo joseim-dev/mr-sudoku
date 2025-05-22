@@ -12,6 +12,60 @@ import { Image, Modal, Text, TouchableOpacity, View } from "react-native";
 import * as Animatable from "react-native-animatable";
 import { useRewardedAd } from "react-native-google-mobile-ads";
 
+// 글자 수별 streak 설정 객체
+const STREAK_TIMER_CONFIG: Record<
+  number,
+  {
+    baseTime: number;
+    streakInterval: number; // 몇 streak마다 시간 변경
+    timeReduction: number; // 각 interval마다 감소할 시간
+    fixedStreakThreshold: number; // 고정 시간 적용 streak 기준
+    fixedTime: number; // 고정 시간
+    minimumTime: number; // 최소 시간
+  }
+> = {
+  4: {
+    baseTime: 15,
+    streakInterval: 1,
+    timeReduction: 1,
+    fixedStreakThreshold: 50,
+    fixedTime: 5,
+    minimumTime: 3,
+  },
+  5: {
+    baseTime: 30,
+    streakInterval: 8,
+    timeReduction: 3,
+    fixedStreakThreshold: 40,
+    fixedTime: 8,
+    minimumTime: 5,
+  },
+  6: {
+    baseTime: 40,
+    streakInterval: 12,
+    timeReduction: 2,
+    fixedStreakThreshold: 60,
+    fixedTime: 10,
+    minimumTime: 6,
+  },
+  7: {
+    baseTime: 50,
+    streakInterval: 10,
+    timeReduction: 3,
+    fixedStreakThreshold: 50,
+    fixedTime: 12,
+    minimumTime: 8,
+  },
+  8: {
+    baseTime: 60,
+    streakInterval: 15,
+    timeReduction: 4,
+    fixedStreakThreshold: 45,
+    fixedTime: 15,
+    minimumTime: 10,
+  },
+};
+
 export default function WordRushScreen() {
   const router = useRouter();
   const { isLoaded, isEarnedReward, load, show, isClosed } =
@@ -28,6 +82,7 @@ export default function WordRushScreen() {
   const [feedbackAnim, setFeedbackAnim] = useState<
     "none" | "correct" | "wrong"
   >("none");
+
   const [wordList, setWordList] = useState<string[]>([]);
   const [streak, setstreak] = useState(0);
   const [timer, setTimer] = useState(10);
@@ -39,6 +94,32 @@ export default function WordRushScreen() {
   const [showHint, setShowHint] = useState(false);
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
   const [hint, setHint] = useState<string | null>(null);
+  const [reductionInfo, setReductionInfo] = useState<string | null>(null);
+
+  // 타이머 계산 함수 (설정 객체 사용)
+  const getTimerForWord = (wordLength: number, currentStreak: number) => {
+    // 설정이 없는 글자 수는 기본값 사용
+    const config = STREAK_TIMER_CONFIG[wordLength] || {
+      baseTime: LETTER_TIMER_MAP[wordLength] ?? 10,
+      streakInterval: 10,
+      timeReduction: 2,
+      fixedStreakThreshold: 50,
+      fixedTime: 5,
+      minimumTime: 3,
+    };
+
+    // 고정 시간 적용 기준을 넘었으면 고정 시간 반환
+    if (currentStreak >= config.fixedStreakThreshold) {
+      return config.fixedTime;
+    }
+
+    // streak interval마다 시간 감소
+    const reductionCount = Math.floor(currentStreak / config.streakInterval);
+    const reducedTime = config.baseTime - reductionCount * config.timeReduction;
+
+    // 최소 시간 보장
+    return Math.max(reducedTime, config.minimumTime);
+  };
 
   useEffect(() => {
     fetchWordList().then((words) => {
@@ -56,17 +137,35 @@ export default function WordRushScreen() {
     setScrambledLetters(shuffleArray(word.split("")));
     setSelectedIndexes([]);
     setFeedbackAnim("none");
-    setTimer(LETTER_TIMER_MAP[word.length] ?? 10);
 
+    // 타이머 계산
+    const newTimer = getTimerForWord(word.length, streak);
+    setTimer(newTimer); // ✅ 하나만 남김
+
+    // 감소 시간 계산 및 표시
+    const config = STREAK_TIMER_CONFIG[word.length];
+    if (config) {
+      const reductionCount = Math.floor(streak / config.streakInterval);
+      const reductionTime = reductionCount * config.timeReduction;
+
+      if (reductionTime > 0) {
+        setReductionInfo(`-${reductionTime} seconds`);
+        setTimeout(() => setReductionInfo(null), 2000); // 2초 후 사라짐
+      }
+    }
+
+    // 최고 기록 불러오기
     const fetchHighScore = async () => {
       const key = `highScore_${word.length}`;
       const prev = await AsyncStorage.getItem(key);
       setHighScore(prev ? parseInt(prev) : 0);
     };
     fetchHighScore();
+
+    // 힌트 초기화
     setHint(null);
-    setShowHint(false); // 힌트 표시 상태도 초기화 추가!
-  }, [currentIndex, wordList]);
+    setShowHint(false);
+  }, [currentIndex, wordList]); // ✅ streak는 제거된 게 맞습니다
 
   useEffect(() => {
     if (timer <= 0 && !isFinishTriggered) {
@@ -86,16 +185,20 @@ export default function WordRushScreen() {
       const isCorrect = userWord === currentWord || wordData[userWord];
       if (isCorrect) {
         setFeedbackAnim("correct");
-        setstreak((prev) => prev + 1);
-        setTimeout(() => {
-          if (currentIndex < wordList.length - 1) {
-            setCurrentIndex(currentIndex + 1);
-          } else {
-            setIsGameEnd(true);
-            saveHighScoreIfNeeded();
-            setModalVisible(true);
-          }
-        }, 700);
+        setstreak((prev) => {
+          const newStreak = prev + 1;
+          // 다음 단어로 넘어갈 때 새로운 streak 기반으로 타이머 미리 계산
+          setTimeout(() => {
+            if (currentIndex < wordList.length - 1) {
+              setCurrentIndex(currentIndex + 1);
+            } else {
+              setIsGameEnd(true);
+              saveHighScoreIfNeeded();
+              setModalVisible(true);
+            }
+          }, 700);
+          return newStreak;
+        });
       } else {
         Haptics.selectionAsync();
         setFeedbackAnim("wrong");
@@ -140,18 +243,18 @@ export default function WordRushScreen() {
   useEffect(() => {
     if (isEarnedReward && isClosed) {
       setModalVisible(false);
-      setTimer(LETTER_TIMER_MAP[currentWord.length] ?? 10);
+      setTimer(getTimerForWord(currentWord.length, streak));
       setShowAnswer(false);
       load();
     }
-  }, [isClosed, isEarnedReward]);
+  }, [isClosed, isEarnedReward]); // streak dependency 제거
 
   const handleOneMoreChance = async () => {
     if (isLoaded) {
       show();
     } else {
       setModalVisible(false);
-      setTimer(LETTER_TIMER_MAP[currentWord.length] ?? 10);
+      setTimer(getTimerForWord(currentWord.length, streak));
       setShowAnswer(false);
     }
   };
@@ -172,19 +275,30 @@ export default function WordRushScreen() {
       easing="ease-in-out"
     >
       <View className="w-full h-[11%] items-center justify-end pb-1" />
-      <View className="w-full h-[12%] justify-end">
-        {highScore !== null && (
+      <View className="w-full h-[12%] justify-end items-center">
+        {highScore !== null ? (
           <Text className="text-center text-[18px] font-[Nunito] text-gray-500">
             Best Streak: {highScore}
           </Text>
+        ) : null}
+
+        {reductionInfo ? (
+          <View className="rounded-full bg-yellow-500 px-3 py-1">
+            <Text className="text-white text-[30px] font-[Nunito] font-bold px-3">
+              {reductionInfo}
+            </Text>
+          </View>
+        ) : (
+          <Text className="text-center text-[34px] font-[Nunito] font-bold text-black">
+            Streak: {streak}
+          </Text>
         )}
-        <Text className="text-center text-[34px] font-[Nunito] font-bold text-black">
-          Streak: {streak}
-        </Text>
-        <Text className="text-center text-[20px] font-[Nunito] font-bold text-red-600 mt-[3%]">
+
+        <Text className="text-center text-[24px] font-[Nunito] font-black text-red-500 py-1 mt-[3%]">
           {timer}
         </Text>
       </View>
+
       <View className="w-full h-[30%] justify-center items-center">
         {selectedIndexes.length === 0 ? (
           <Text className="text-[30px] font-[Nunito] text-gray-400 italic">
@@ -288,19 +402,6 @@ export default function WordRushScreen() {
         >
           clear
         </Text>
-      </View>
-      <View className="w-full h-[13%] justify-center items-center">
-        <TouchableOpacity
-          className="w-[60%] bg-[#246965] rounded-xl h-[50px] items-center justify-center"
-          onPress={() => {
-            setModalVisible(true);
-            setIsGameEnd(true);
-          }}
-        >
-          <Text className="font-[nunito] text-[24px] text-white font-bold">
-            Finish
-          </Text>
-        </TouchableOpacity>
       </View>
       <View className="w-full h-[13%] justify-center items-center">
         <TouchableOpacity
