@@ -70,7 +70,7 @@ export default function WordRushScreen() {
 
   useEffect(() => {
     if (timer <= 0 && !isFinishTriggered) {
-      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
+      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
       saveHighScoreIfNeeded();
       setModalVisible(true);
       return;
@@ -97,7 +97,7 @@ export default function WordRushScreen() {
           }
         }, 700);
       } else {
-        Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
+        Haptics.selectionAsync();
         setFeedbackAnim("wrong");
         setTimeout(() => {
           setFeedbackAnim("none");
@@ -163,18 +163,15 @@ export default function WordRushScreen() {
     setModalVisible(true);
   };
 
-  const getHint = (word: string): string => {
-    const indices = shuffleArray([...Array(word.length).keys()]).slice(0, 2);
-    return word
-      .split("")
-      .map((char, idx) => (indices.includes(idx) ? char.toUpperCase() : "_"))
-      .join(" ");
-  };
-
   return (
-    <View className="flex-1 bg-[#FDF6E5]">
+    <Animatable.View
+      className="flex-1 bg-[#FDF6E5]"
+      animation={timer <= 0 && !isGameEnd ? "shake" : undefined}
+      duration={400}
+      iterationCount={1}
+      easing="ease-in-out"
+    >
       <View className="w-full h-[11%] items-center justify-end pb-1" />
-
       <View className="w-full h-[12%] justify-end">
         {highScore !== null && (
           <Text className="text-center text-[18px] font-[Nunito] text-gray-500">
@@ -188,7 +185,6 @@ export default function WordRushScreen() {
           {timer}
         </Text>
       </View>
-
       <View className="w-full h-[30%] justify-center items-center">
         {selectedIndexes.length === 0 ? (
           <Text className="text-[30px] font-[Nunito] text-gray-400 italic">
@@ -250,7 +246,6 @@ export default function WordRushScreen() {
           </TouchableOpacity>
         )}
       </View>
-
       <View className="w-full h-[26%] justify-start items-center px-4 gap-y-4">
         {getButtonRows(scrambledLetters).map((row, rowIndex) => (
           <View
@@ -286,7 +281,6 @@ export default function WordRushScreen() {
           </View>
         ))}
       </View>
-
       <View className="w-full h-[8%] justify-start items-center">
         <Text
           onPress={() => setSelectedIndexes([])}
@@ -295,7 +289,6 @@ export default function WordRushScreen() {
           clear
         </Text>
       </View>
-
       <View className="w-full h-[13%] justify-center items-center">
         <TouchableOpacity
           className="w-[60%] bg-[#246965] rounded-xl h-[50px] items-center justify-center"
@@ -309,7 +302,6 @@ export default function WordRushScreen() {
           </Text>
         </TouchableOpacity>
       </View>
-
       <View className="w-full h-[13%] justify-center items-center">
         <TouchableOpacity
           className="w-[60%] bg-[#246965] rounded-xl h-[50px] items-center justify-center"
@@ -320,7 +312,6 @@ export default function WordRushScreen() {
           </Text>
         </TouchableOpacity>
       </View>
-
       <Modal visible={modalVisible} transparent animationType="fade">
         <View className="flex-1 bg-white/90 justify-center items-center">
           <View className="bg-white w-[80%] py-4 px-6 rounded-2xl items-center border-4 border-[#2B6D69]">
@@ -388,6 +379,6 @@ export default function WordRushScreen() {
           </View>
         </View>
       </Modal>
-    </View>
+    </Animatable.View>
   );
 }

@@ -4,15 +4,16 @@ import { useRouter } from "expo-router";
 import { usePostHog } from "posthog-react-native";
 import React, { useEffect, useState } from "react";
 
+import * as Haptics from "expo-haptics";
 import {
   Alert,
   Dimensions,
   StyleSheet,
   Text,
   TouchableOpacity,
-  Vibration,
   View,
 } from "react-native";
+
 import ConfettiCannon from "react-native-confetti-cannon";
 
 import RewardModal from "@/components/Modal/RewardModal";
@@ -185,7 +186,7 @@ export default function GameScreen() {
     // 틀린 입력 처리
     const correctNumber = solutionGrid[row][col];
     if (num !== null && num !== correctNumber) {
-      Vibration.vibrate(100);
+      Haptics.selectionAsync();
       setMistakeCells([{ row, col }]);
       setMistakeCount((prev) => prev + 1);
 
