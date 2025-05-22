@@ -18,20 +18,12 @@ import ConfettiCannon from "react-native-confetti-cannon";
 import RewardModal from "@/components/Modal/RewardModal";
 import NumberPad from "@/components/NumberPad";
 import SudokuBoard from "@/components/SudokuBoard";
-import {
-  interstitialAdId,
-  interstitialAdId2,
-  rewardedAdId,
-  rewardedAdId2,
-} from "@/constants/adIds";
+import { sudokuRewardedAdId } from "@/constants/adIds";
 import { generatePuzzle, Grid, solveSudoku } from "@/lib/sudoku";
 import { calculateReward } from "@/utils/game/reward";
 import { formatTime } from "@/utils/game/time";
 import { checkPuzzleComplete } from "@/utils/game/validation";
-import {
-  useInterstitialAd,
-  useRewardedAd,
-} from "react-native-google-mobile-ads";
+import { useRewardedAd } from "react-native-google-mobile-ads";
 
 export default function GameScreen() {
   const posthog = usePostHog();
@@ -47,26 +39,7 @@ export default function GameScreen() {
   const [history, setHistory] = useState<Grid[]>([]);
 
   const { isLoaded, isClosed, load, show, isEarnedReward } =
-    useRewardedAd(rewardedAdId);
-  const {
-    isLoaded: isLoaded2,
-    isClosed: isClosed2,
-    load: load2,
-    show: show2,
-    isEarnedReward: isEarnedReward2,
-  } = useRewardedAd(rewardedAdId2);
-  const {
-    load: load3,
-    show: show3,
-    isLoaded: isLoaded3,
-    isClosed: isClosed3,
-  } = useInterstitialAd(interstitialAdId);
-  const {
-    load: load4,
-    show: show4,
-    isLoaded: isLoaded4,
-    isClosed: isClosed4,
-  } = useInterstitialAd(interstitialAdId2);
+    useRewardedAd(sudokuRewardedAdId);
 
   const [difficultyLabel, setDifficultyLabel] = useState("");
   const [grid, setGrid] = useState<Grid>([]);
@@ -99,18 +72,15 @@ export default function GameScreen() {
   };
 
   useEffect(() => {
-    if (isClosed2 && isEarnedReward2) {
+    if (isClosed && isEarnedReward) {
       setMistakeCount((prev) => (prev > 0 ? prev - 1 : 0));
-      load2();
+      load();
     }
-  }, [isClosed2, isEarnedReward2]);
+  }, [isClosed, isEarnedReward]);
 
   useEffect(() => {
     load();
-    load2();
-    load3();
-    load4();
-  }, [load, load2, load3, load4]);
+  }, [load]);
 
   useEffect(() => {
     if (isClosed && isEarnedReward) {
@@ -118,19 +88,6 @@ export default function GameScreen() {
       load();
     }
   }, [isClosed, isEarnedReward]);
-
-  useEffect(() => {
-    if (isClosed3 && rewardResult) {
-      const { exp, coins } = rewardResult;
-      rewardUser(exp, coins).then(() => setShowRewardModal(true));
-    }
-  }, [isClosed3, rewardResult]);
-
-  useEffect(() => {
-    if (isClosed4) {
-      router.push("/(tabs)");
-    }
-  }, [isClosed4]);
 
   useEffect(() => {
     const loadAndGenerate = async () => {
@@ -185,8 +142,8 @@ export default function GameScreen() {
       {
         text: "Get one more chance",
         onPress: () => {
-          if (isLoaded2) {
-            show2();
+          if (isLoaded) {
+            show();
             posthog.capture("Watch Ad(mistake)");
           } else {
             Alert.alert("Ad not ready", "Please try again shortly.", [
@@ -285,15 +242,11 @@ export default function GameScreen() {
       mistakeCount
     );
     setRewardResult({ coins, exp });
-    if (isLoaded3) {
-      show3();
-      posthog.capture("Game Finished(Ad)");
-    } else {
-      posthog.capture("Game Finished(No Ad)");
 
-      await rewardUser(exp, coins);
-      setShowRewardModal(true);
-    }
+    posthog.capture("Game Finished(No Ad)");
+
+    await rewardUser(exp, coins);
+    setShowRewardModal(true);
 
     setTimeout(() => setShowConfetti(false), 4000);
   };
@@ -443,6 +396,12 @@ export default function GameScreen() {
               <Ionicons name="exit-outline" size={26} color="#F28B82" />
             </TouchableOpacity>
           </View>
+          {/* <TouchableOpacity
+            style={styles.debugButton}
+            onPress={handleAutoComplete}
+          >
+            <Text style={styles.debugText}>Auto Complete</Text>
+          </TouchableOpacity> */}
           {/* <TouchableOpacity
             style={styles.debugButton}
             onPress={handleAutoComplete}

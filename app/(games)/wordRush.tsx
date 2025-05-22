@@ -1,6 +1,6 @@
 import wordDataRaw from "@/assets/data/filtered_words_dictionary.json";
 import WordRushButton from "@/components/page/games/wordRush/WordRushButton";
-import { WordRushRewardedAdId } from "@/constants/adIds";
+import { wordRushRewardedAdId } from "@/constants/adIds";
 import { LETTER_TIMER_MAP } from "@/constants/wordRushTimer";
 import { fetchWordList, shuffleArray } from "@/utils/wordRush/wordUtils";
 import { Ionicons } from "@expo/vector-icons";
@@ -15,7 +15,7 @@ import { useRewardedAd } from "react-native-google-mobile-ads";
 export default function WordRushScreen() {
   const router = useRouter();
   const { isLoaded, isEarnedReward, load, show, isClosed } =
-    useRewardedAd(WordRushRewardedAdId);
+    useRewardedAd(wordRushRewardedAdId);
   const wordData: Record<string, number> = wordDataRaw as Record<
     string,
     number
