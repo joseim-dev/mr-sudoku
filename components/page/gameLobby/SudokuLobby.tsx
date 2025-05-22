@@ -1,11 +1,14 @@
+import { useAd } from "@/contexts/AdContext/AdContext";
 import { Ionicons } from "@expo/vector-icons";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useRouter } from "expo-router";
-import React from "react";
+import React, { useEffect } from "react";
 import { Text, TouchableOpacity, View } from "react-native";
 
 export default function SudokuLobby() {
   const router = useRouter();
+  const { showStartAd, isStartAdLoaded, isStartAdClosed, startAdError } =
+    useAd();
 
   const difficulties = [
     { key: "easy", base: "easy" },
@@ -28,8 +31,19 @@ export default function SudokuLobby() {
     ]);
     await AsyncStorage.setItem("sudokuDifficulty", base);
     await AsyncStorage.setItem("sudokuDifficultyLabel", key);
-    router.push("/(games)/sudoku");
+
+    if (isStartAdLoaded) {
+      showStartAd();
+    } else {
+      router.push("/(games)/sudoku");
+    }
   };
+
+  useEffect(() => {
+    if (isStartAdClosed) {
+      router.push("/(games)/sudoku");
+    }
+  }, [isStartAdClosed]);
 
   return (
     <View className="w-full h-full bg-[#1B4529]">

@@ -404,7 +404,7 @@ export default function WordRushScreen() {
               resizeMode="contain"
             />
             <Text className="text-[30px] font-extrabold text-[#1B3145] mb-2 font-[nunito]">
-              {isGameEnd ? "Game Finished" : "Game Over"}
+              {isGameEnd ? "Mustache!" : "Game Over"}
             </Text>
 
             {!isGameEnd && (

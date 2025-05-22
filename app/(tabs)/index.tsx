@@ -2,6 +2,7 @@ import React from "react";
 
 import GameCard from "@/components/page/home/GameCard";
 import { Ionicons } from "@expo/vector-icons";
+import { Image } from "expo-image";
 import {
   ImageBackground,
   Linking,
@@ -59,10 +60,16 @@ export default function HomeScreen() {
       </View>
       <View className="h-[28%] w-full px-4 flex justify-start items-center">
         <View className="w-full aspect-[2]">
-          <ImageBackground
-            className="w-full h-full"
-            source={require("@/assets//images/home-card/home-main-card.png")}
-            resizeMode="contain"
+          <Image
+            style={{ width: "100%", height: "100%" }} // className 대신 style 사용
+            source={{
+              uri: "https://ljgohbrmnjtyvkyimdyb.supabase.co/storage/v1/object/public/elements//home-main-card.png",
+            }}
+            contentFit="contain" // resizeMode에 해당
+            transition={300} // optional: 로딩 시 fade-in 효과
+            placeholder={require("@/assets/images/home-main-card.png")} // optional: 로딩 중 이미지
+            placeholderContentFit="contain" // optional: 로딩 중 이미지 resizeMode
+            cachePolicy="none"
           />
         </View>
       </View>
