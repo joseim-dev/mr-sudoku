@@ -15,7 +15,7 @@ const SudokuButton: React.FC<SudokuButtonProps> = ({
 }) => {
   const router = useRouter();
   return (
-    <View className="h-[10%] flex-row justify-center items-start">
+    <View className="h-full flex-row justify-center items-start">
       <TouchableOpacity
         className="w-[65%] bg-[#265D5A] rounded-full justify-center items-center shadow-md"
         style={{ height: isSmallDevice ? 40 : 50, elevation: 6 }}

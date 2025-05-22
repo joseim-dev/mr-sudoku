@@ -33,6 +33,7 @@ export default function GameScreen() {
     exp: number;
     coins: number;
   } | null>(null);
+  const [selectedNumber, setSelectedNumber] = useState<number | null>(null);
 
   const [showConfetti, setShowConfetti] = useState(false);
   const [history, setHistory] = useState<Grid[]>([]);
@@ -175,6 +176,8 @@ export default function GameScreen() {
   };
 
   const handleNumberSelect = (num: number | null) => {
+    setSelectedNumber(num); // ✅ 숫자 선택 시 상태 저장
+
     if (!selectedCell || grid.length === 0) return;
     const { row, col } = selectedCell;
     if (grid[row][col] !== null && num !== null) return;
@@ -334,6 +337,7 @@ export default function GameScreen() {
                 mistakeCount={mistakeCount}
                 time={time}
                 formatTime={formatTime}
+                selectedNumber={selectedNumber} // ✅ 새로 추가
               />
             </View>
             <View className="h-[20%] flex justify-center">

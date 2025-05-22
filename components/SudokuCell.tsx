@@ -7,9 +7,11 @@ type Props = {
   col: number;
   selected: boolean;
   isMistake: boolean;
+  isHighlighted?: boolean;
   onSelect: (row: number, col: number) => void;
   notes: number[];
   initialValue: number | null | undefined;
+  isMatchedNumber?: boolean;
 };
 
 const SudokuCell = ({
@@ -18,9 +20,11 @@ const SudokuCell = ({
   col,
   selected,
   isMistake,
+  isHighlighted,
   onSelect,
   notes,
   initialValue,
+  isMatchedNumber,
 }: Props) => {
   const isUserInput =
     initialValue === null || typeof initialValue === "undefined";
@@ -51,9 +55,12 @@ const SudokuCell = ({
     <TouchableOpacity
       style={[
         styles.cell,
-        selected && styles.selectedCell,
-        isMistake && styles.mistakeCell,
         { borderColor: "#ccc", borderWidth: 0.5 },
+        // 스타일 적용 순서가 중요! 뒤에 있는 스타일이 앞의 스타일을 덮어씁니다.
+        isHighlighted && styles.highlightedCell,
+        isMatchedNumber && styles.matchedNumberCell,
+        isMistake && styles.mistakeCell,
+        selected && styles.selectedCell, // selected가 가장 마지막이어야 함
       ]}
       onPress={() => onSelect(row, col)}
     >
@@ -69,10 +76,9 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: "#FDF6E5",
   },
   selectedCell: {
-    backgroundColor: "#eef",
+    backgroundColor: "#CCE4FF",
   },
   mistakeCell: {
     backgroundColor: "#fdd",
@@ -98,5 +104,11 @@ const styles = StyleSheet.create({
     width: "33%",
     textAlign: "center",
     color: "#999",
+  },
+  highlightedCell: {
+    backgroundColor: "#F0F0F0",
+  },
+  matchedNumberCell: {
+    backgroundColor: "#DEDEDE", // 연한 파랑, 투명도 있음
   },
 });

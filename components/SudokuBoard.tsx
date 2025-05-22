@@ -15,6 +15,7 @@ type Props = {
   mistakeCount: number;
   time: number;
   formatTime: (time: number) => string;
+  selectedNumber: number | null;
 };
 
 function SudokuBoard({
@@ -28,6 +29,7 @@ function SudokuBoard({
   mistakeCount,
   time,
   formatTime,
+  selectedNumber,
 }: Props) {
   const shakeAnim = useRef(new Animated.Value(0)).current;
 
@@ -53,6 +55,11 @@ function SudokuBoard({
     }
   }, [mistakeCells]);
 
+  // 선택된 셀의 값을 가져오기
+  const selectedCellValue = selectedCell
+    ? grid[selectedCell.row][selectedCell.col]
+    : null;
+
   return (
     <View className="w-full h-fit flex justify-center">
       <View className="flex-row justify-between items-end mb-1.5 h-fit">
@@ -73,9 +80,32 @@ function SudokuBoard({
         {grid.map((row, rowIndex) => (
           <View key={rowIndex} className="flex-row flex-1">
             {row.map((value, colIndex) => {
-              const selected =
-                selectedCell?.row === rowIndex &&
-                selectedCell?.col === colIndex;
+              const isSelected =
+                selectedCell !== null &&
+                selectedCell.row === rowIndex &&
+                selectedCell.col === colIndex;
+
+              // 선택된 셀의 값과 같은 숫자인지 확인 (선택된 셀 자체는 제외)
+              const isMatchedNumber =
+                !isSelected && // 선택된 셀 자체는 제외
+                selectedCellValue !== null && // 선택된 셀이 빈 셀이 아닐 때만
+                value !== null && // 현재 셀이 빈 셀이 아닐 때만
+                value === selectedCellValue; // 값이 같을 때
+
+              const isSameRow =
+                selectedCell !== null && selectedCell.row === rowIndex;
+              const isSameCol =
+                selectedCell !== null && selectedCell.col === colIndex;
+              const isSameBox =
+                selectedCell !== null &&
+                Math.floor(selectedCell.row / 3) === Math.floor(rowIndex / 3) &&
+                Math.floor(selectedCell.col / 3) === Math.floor(colIndex / 3);
+
+              const isHighlighted =
+                selectedCell !== null &&
+                !isSelected &&
+                (isSameRow || isSameCol || isSameBox);
+
               const isMistake = mistakeCells.some(
                 (cell) => cell.row === rowIndex && cell.col === colIndex
               );
@@ -86,11 +116,13 @@ function SudokuBoard({
                   value={value}
                   row={rowIndex}
                   col={colIndex}
-                  selected={selected}
+                  selected={isSelected}
                   isMistake={isMistake}
+                  isHighlighted={isHighlighted}
                   onSelect={onCellSelect}
                   notes={memoGrid?.[rowIndex]?.[colIndex] || []}
                   initialValue={initialGrid?.[rowIndex]?.[colIndex]}
+                  isMatchedNumber={isMatchedNumber}
                 />
               );
             })}
