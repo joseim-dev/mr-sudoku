@@ -24,36 +24,32 @@ const STREAK_TIMER_CONFIG: Record<
 > = {
   4: {
     baseTime: 20,
-    streakInterval: 10,
+    streakInterval: 5,
     timeReduction: 2,
-    minimumTime: 10,
+    minimumTime: 8,
   },
   5: {
     baseTime: 30,
-    streakInterval: 10,
+    streakInterval: 5,
     timeReduction: 2,
-
-    minimumTime: 20,
+    minimumTime: 12,
   },
   6: {
     baseTime: 40,
-    streakInterval: 10,
+    streakInterval: 5,
     timeReduction: 2,
-
-    minimumTime: 30,
+    minimumTime: 24,
   },
   7: {
     baseTime: 50,
-    streakInterval: 10,
-    timeReduction: 3,
-
-    minimumTime: 30,
+    streakInterval: 5,
+    timeReduction: 2,
+    minimumTime: 28,
   },
   8: {
     baseTime: 60,
-    streakInterval: 10,
-    timeReduction: 3,
-
+    streakInterval: 5,
+    timeReduction: 2,
     minimumTime: 30,
   },
 };
@@ -124,14 +120,18 @@ export default function WordRushScreen() {
     const newTimer = getTimerForWord(word.length, streak);
     setTimer(newTimer); // ✅ 하나만 남김
 
-    // 감소 시간 계산 및 표시
+    // ⭐ 여기에 추가하세요 ⭐
     const config = STREAK_TIMER_CONFIG[word.length];
-    if (config) {
-      const reductionCount = Math.floor(streak / config.streakInterval);
-      const reductionTime = reductionCount * config.timeReduction;
+    if (config && streak > 0 && streak % config.streakInterval === 0) {
+      const currentTime = getTimerForWord(word.length, streak);
+      const previousTime = getTimerForWord(
+        word.length,
+        streak - config.streakInterval
+      );
 
-      if (reductionTime > 0) {
-        setReductionInfo(`-${reductionTime} seconds`);
+      // 실제로 시간이 감소했을 때만 표시
+      if (previousTime > currentTime) {
+        setReductionInfo(`-${config.timeReduction} seconds`);
         setTimeout(() => setReductionInfo(null), 2000); // 2초 후 사라짐
       }
     }
