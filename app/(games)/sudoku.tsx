@@ -202,7 +202,7 @@ export default function GameScreen() {
     // 틀린 입력 처리
     const correctNumber = solutionGrid[row][col];
     if (num !== null && num !== correctNumber) {
-      Haptics.selectionAsync();
+      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
       setMistakeCells([{ row, col }]);
       setMistakeCount((prev) => prev + 1);
 

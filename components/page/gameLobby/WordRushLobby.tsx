@@ -14,7 +14,7 @@ export default function WordRushLobby() {
 
   const handleSelectLetterCount = async (count: number) => {
     await AsyncStorage.setItem("wordRushLetterCount", count.toString());
-    if (isStartAdLoaded || startAdError) {
+    if (isStartAdLoaded) {
       showStartAd();
     } else {
       router.push("/(games)/wordRush");

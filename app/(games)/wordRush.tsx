@@ -182,7 +182,7 @@ export default function WordRushScreen() {
           return newStreak;
         });
       } else {
-        Haptics.selectionAsync();
+        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
         setFeedbackAnim("wrong");
         setTimeout(() => {
           setFeedbackAnim("none");
@@ -281,9 +281,9 @@ export default function WordRushScreen() {
         </Text>
       </View>
 
-      <View className="w-full h-[30%] justify-center items-center">
+      <View className="w-full h-[30%] justify-start items-center pt-[10%]">
         {selectedIndexes.length === 0 ? (
-          <Text className="text-[30px] font-[Nunito] text-gray-400 italic">
+          <Text className="text-[30px] font-[Nunito] text-gray-400 ">
             Guess the word
           </Text>
         ) : (
@@ -298,7 +298,7 @@ export default function WordRushScreen() {
             duration={600}
             iterationCount={1}
           >
-            <View className="flex-row justify-center items-center gap-x-3">
+            <View className="flex-row justify-center items-center gap-x-3 ">
               {Array.from({ length: currentWord.length }).map((_, idx) => (
                 <Text
                   key={idx}
