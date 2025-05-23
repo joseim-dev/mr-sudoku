@@ -25,7 +25,7 @@ export default function RewardModal({
     <Modal transparent animationType="fade" visible={visible}>
       <View style={styles.modalOverlay}>
         <View style={styles.modalContent}>
-          <Text style={styles.modalTitle}>Mr.Sudoku!</Text>
+          <Text style={styles.modalTitle}>Mustache!</Text>
           <Text style={styles.modalReward}>+{exp} EXP</Text>
           <View style={styles.coinRewardContainer}>
             <Text style={styles.modalReward}>+{coins} </Text>

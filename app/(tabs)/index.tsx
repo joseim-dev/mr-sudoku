@@ -26,7 +26,7 @@ export default function HomeScreen() {
       <View className="h-[24%] w-full flex justify-center items-center">
         <View className="w-full h-[80%] flex justify-center items-center">
           <Text className="text-[50px] text-[#246965] font-[nunito] font-black text-center pt-4">
-            {Platform.OS === "ios" ? "MUSTACHE" : "MR.SUDOKU"}
+            MUSTACHE
           </Text>
         </View>
         <View className="w-full h-[20%] flex justify-center items-center px-4">
