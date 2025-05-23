@@ -62,10 +62,10 @@ export default function SudokuLobby() {
 
       {/* 게임 이름 및 안내 */}
       <View className="w-full h-[15%] flex justify-center items-center">
-        <Text className="text-[40px] font-[nunito] font-black text-white">
+        <Text className="text-[44px] font-[nunito] font-black text-white">
           Mr.Sudoku
         </Text>
-        <Text className="text-[18px] font-[nunito] font-medium text-white mt-3">
+        <Text className="text-[22px] font-[nunito] font-medium text-white mt-3">
           Choose a difficulty.
         </Text>
       </View>
@@ -75,11 +75,11 @@ export default function SudokuLobby() {
         {difficulties.map((level) => (
           <TouchableOpacity
             key={level.key}
-            className="w-[50%] h-[50px] bg-[#5FB085] rounded-full flex justify-center items-center mb-5"
+            className="w-[50%] h-[56px] bg-[#5FB085] rounded-full flex justify-center items-center mb-5"
             activeOpacity={0.85}
             onPress={() => handleSelectDifficulty(level.key, level.base)}
           >
-            <Text className="text-[18px] font-[nunito] font-bold text-white capitalize">
+            <Text className="text-[20px] font-[nunito] font-bold text-white capitalize">
               {level.key}
             </Text>
           </TouchableOpacity>

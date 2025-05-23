@@ -80,7 +80,7 @@ const styles = StyleSheet.create({
   cardContainer: {
     borderRadius: 24,
     borderWidth: 5,
-    width: "47%",
+    width: "48%",
     aspectRatio: 1,
     alignItems: "center",
   },
