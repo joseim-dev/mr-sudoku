@@ -33,6 +33,17 @@ export default function SudokuLobby() {
     { key: "master", base: "hard" },
   ];
 
+  const handleContinueGame = async () => {
+    const savedGame = await AsyncStorage.getItem("sudokuSavedGame");
+    if (savedGame) {
+      if (isStartAdLoaded) {
+        showStartAd();
+      } else {
+        router.push("/(games)/sudoku");
+      }
+    }
+  };
+
   const handleSelectDifficulty = async (key: string, base: string) => {
     await AsyncStorage.multiRemove([
       "sudokuGrid",
@@ -92,7 +103,7 @@ export default function SudokuLobby() {
               className="w-[50%] h-[56px] border-[2px] border-[#5FB085] ] rounded-full flex justify-center items-center mb-5"
               activeOpacity={0.85}
               onPress={() => {
-                router.push("/(games)/sudoku");
+                handleContinueGame();
               }}
             >
               <Text className="text-[20px] font-[nunito] font-bold text-white capitalize">
