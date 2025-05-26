@@ -329,8 +329,8 @@ export default function GameScreen() {
       </View>
       {grid.length > 0 ? (
         <View className="flex-1 justify-between h-[90%] ">
-          <View className="w-full h-[5%]" />
-          <View className=" h-[85%] w-full  ">
+          <View className="w-full h-[4%]" />
+          <View className=" h-[86%] w-full  ">
             <View className=" w-full h-fit ">
               <SudokuBoard
                 grid={grid}

@@ -20,7 +20,7 @@ export default function NumberPad({ onSelectNumber }: NumberPadProps) {
           <TouchableOpacity
             key={num}
             className="m-1.5 justify-center items-center rounded"
-            style={{ width: buttonWidth, height: 36 }}
+            style={{ width: buttonWidth, height: 40 }}
             onPress={() => onSelectNumber(num)}
           >
             <Text className="text-[36px] text-[#265D5A] font-medium">

@@ -3,12 +3,26 @@ import { Ionicons } from "@expo/vector-icons";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useRouter } from "expo-router";
 import React, { useEffect } from "react";
-import { Text, TouchableOpacity, View } from "react-native";
+import { ScrollView, Text, TouchableOpacity, View } from "react-native";
 
 export default function SudokuLobby() {
   const router = useRouter();
   const { showStartAd, isStartAdLoaded, isStartAdClosed, startAdError } =
     useAd();
+  const [isSavedGame, setIsSavedGame] = React.useState(false);
+
+  useEffect(() => {
+    const checkSavedGame = async () => {
+      const saved = await AsyncStorage.getItem("sudokuSavedGame");
+      if (saved) {
+        setIsSavedGame(true);
+      } else {
+        setIsSavedGame(false);
+      }
+    };
+
+    checkSavedGame();
+  }, []);
 
   const difficulties = [
     { key: "easy", base: "easy" },
@@ -57,9 +71,7 @@ export default function SudokuLobby() {
           <Ionicons name="chevron-back" size={32} color="white" />
         </TouchableOpacity>
       </View>
-
       <View className="w-full h-[4%]" />
-
       {/* 게임 이름 및 안내 */}
       <View className="w-full h-[15%] flex justify-center items-center">
         <Text className="text-[44px] font-[nunito] font-black text-white">
@@ -69,25 +81,40 @@ export default function SudokuLobby() {
           Choose a difficulty.
         </Text>
       </View>
-
       {/* 난이도 선택 버튼 */}
-      <View className="w-full h-[59%] flex items-center py-8">
-        {difficulties.map((level) => (
-          <TouchableOpacity
-            key={level.key}
-            className="w-[50%] h-[56px] bg-[#5FB085] rounded-full flex justify-center items-center mb-5"
-            activeOpacity={0.85}
-            onPress={() => handleSelectDifficulty(level.key, level.base)}
-          >
-            <Text className="text-[20px] font-[nunito] font-bold text-white capitalize">
-              {level.key}
-            </Text>
-          </TouchableOpacity>
-        ))}
+      <View className="w-full h-[69%]">
+        <ScrollView
+          contentContainerStyle={{ alignItems: "center", paddingVertical: 32 }}
+          showsVerticalScrollIndicator={false}
+        >
+          {isSavedGame && (
+            <TouchableOpacity
+              className="w-[50%] h-[56px] border-[2px] border-[#5FB085] ] rounded-full flex justify-center items-center mb-5"
+              activeOpacity={0.85}
+              onPress={() => {
+                router.push("/(games)/sudoku");
+              }}
+            >
+              <Text className="text-[20px] font-[nunito] font-bold text-white capitalize">
+                Continue
+              </Text>
+            </TouchableOpacity>
+          )}
+          {difficulties.map((level) => (
+            <TouchableOpacity
+              key={level.key}
+              className="w-[50%] h-[56px] bg-[#5FB085] rounded-full flex justify-center items-center mb-5"
+              activeOpacity={0.85}
+              onPress={() => handleSelectDifficulty(level.key, level.base)}
+            >
+              <Text className="text-[20px] font-[nunito] font-bold text-white capitalize">
+                {level.key}
+              </Text>
+            </TouchableOpacity>
+          ))}
+        </ScrollView>
       </View>
-
       {/* 하단 여백 */}
-      <View className="w-full h-[10%]" />
     </View>
   );
 }
