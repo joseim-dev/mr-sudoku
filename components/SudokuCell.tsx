@@ -32,7 +32,13 @@ const SudokuCell = ({
   const content = useMemo(() => {
     if (value !== null) {
       return (
-        <Text style={[styles.cellText, isUserInput && styles.userCorrectCell]}>
+        <Text
+          style={[
+            styles.cellText,
+            isUserInput && styles.userCorrectCell,
+            isMistake && styles.mistakeText, // 추가!
+          ]}
+        >
           {value}
         </Text>
       );
@@ -59,8 +65,8 @@ const SudokuCell = ({
         // 스타일 적용 순서가 중요! 뒤에 있는 스타일이 앞의 스타일을 덮어씁니다.
         isHighlighted && styles.highlightedCell,
         isMatchedNumber && styles.matchedNumberCell,
-        isMistake && styles.mistakeCell,
         selected && styles.selectedCell, // selected가 가장 마지막이어야 함
+        isMistake && styles.mistakeCell,
       ]}
       onPress={() => onSelect(row, col)}
     >
@@ -78,7 +84,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   selectedCell: {
-    backgroundColor: "#CCE4FF",
+    backgroundColor: "#CCEEC8",
   },
   mistakeCell: {
     backgroundColor: "#fdd",
@@ -106,9 +112,13 @@ const styles = StyleSheet.create({
     color: "#999",
   },
   highlightedCell: {
-    backgroundColor: "#F0F0F0",
+    backgroundColor: "#CCEEC650",
   },
   matchedNumberCell: {
-    backgroundColor: "#DEDEDE", // 연한 파랑, 투명도 있음
+    backgroundColor: "#CCEEC8", // 연한 파랑, 투명도 있음
+  },
+  mistakeText: {
+    color: "#DC5555",
+    fontWeight: "600",
   },
 });
