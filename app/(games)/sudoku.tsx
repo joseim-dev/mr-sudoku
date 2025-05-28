@@ -41,6 +41,7 @@ export default function GameScreen() {
   } | null>(null);
   const [selectedNumber, setSelectedNumber] = useState<number | null>(null);
   const [hasSubmitted, setHasSubmitted] = useState(false);
+  const [completedNumbers, setCompletedNumbers] = useState<number[]>([]);
 
   const [showConfetti, setShowConfetti] = useState(false);
   const [history, setHistory] = useState<Grid[]>([]);
@@ -86,6 +87,13 @@ export default function GameScreen() {
   useEffect(() => {
     load();
   }, [load]);
+
+  useEffect(() => {
+    if (grid.length > 0) {
+      const completed = getCompletedNumbers(grid);
+      setCompletedNumbers(completed);
+    }
+  }, [grid]);
 
   useEffect(() => {
     if (
@@ -316,6 +324,36 @@ export default function GameScreen() {
     router.back();
     saveGameState();
   };
+  // GameScreen.tsx에 추가할 함수들
+
+  // 각 숫자별 사용 개수를 계산하는 함수
+  const getNumberCounts = (grid: Grid): Record<number, number> => {
+    const counts: Record<number, number> = {};
+
+    // 1-9 초기화
+    for (let i = 1; i <= 9; i++) {
+      counts[i] = 0;
+    }
+
+    // 그리드를 순회하며 각 숫자 개수 세기
+    grid.forEach((row) => {
+      row.forEach((cell) => {
+        if (cell !== null && cell >= 1 && cell <= 9) {
+          counts[cell]++;
+        }
+      });
+    });
+
+    return counts;
+  };
+
+  // 완성된 숫자들(9개 모두 채워진)을 반환하는 함수
+  const getCompletedNumbers = (grid: Grid): number[] => {
+    const counts = getNumberCounts(grid);
+    return Object.keys(counts)
+      .map(Number)
+      .filter((num) => counts[num] === 9);
+  };
 
   return (
     <View className="flex-1 bg-[#FDF7E7] justify-start px-[1.5%]">
@@ -365,7 +403,10 @@ export default function GameScreen() {
             </View>
 
             <View className="h-fit flex justify-start">
-              <NumberPad onSelectNumber={handleNumberSelect} />
+              <NumberPad
+                onSelectNumber={handleNumberSelect}
+                completedNumbers={completedNumbers}
+              />
             </View>
           </View>
 
