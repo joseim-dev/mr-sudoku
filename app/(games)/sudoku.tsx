@@ -1,7 +1,7 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useRouter } from "expo-router";
 import { usePostHog } from "posthog-react-native";
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 
 import * as Haptics from "expo-haptics";
 import {
@@ -40,6 +40,7 @@ export default function GameScreen() {
     coins: number;
   } | null>(null);
   const [selectedNumber, setSelectedNumber] = useState<number | null>(null);
+  const [hasSubmitted, setHasSubmitted] = useState(false);
 
   const [showConfetti, setShowConfetti] = useState(false);
   const [history, setHistory] = useState<Grid[]>([]);
@@ -81,24 +82,26 @@ export default function GameScreen() {
   const isAllFilled = (grid: Grid): boolean => {
     return grid.every((row) => row.every((cell) => cell !== null));
   };
-  useEffect(() => {
-    if (isClosed && isEarnedReward) {
-      setMistakeCount((prev) => (prev > 0 ? prev - 1 : 0));
-      load();
-    }
-  }, [isClosed, isEarnedReward]);
 
   useEffect(() => {
     load();
   }, [load]);
+
   useEffect(() => {
-    if (grid.length > 0) {
-      setIsGridFilled(isAllFilled(grid));
+    if (
+      !hasSubmitted && // ✅ 한 번만 실행
+      grid.length > 0 &&
+      isAllFilled(grid) &&
+      checkPuzzleComplete(grid, solutionGrid)
+    ) {
+      setHasSubmitted(true); // 실행 후 잠금
+      handleSubmit();
     }
   }, [grid]);
 
   useEffect(() => {
     if (isClosed && isEarnedReward) {
+      setMistakeCount((prev) => (prev > 0 ? prev - 1 : 0));
       setHintCount((prev) => prev + 1);
       load();
     }
@@ -248,7 +251,7 @@ export default function GameScreen() {
 
   const handleSubmit = async () => {
     if (!grid.length || !checkPuzzleComplete(grid, solutionGrid)) {
-      Alert.alert("Please check again", "There are blanks in the puzzle.");
+      console.log("not finished");
       return;
     }
     setShowConfetti(true);
@@ -309,6 +312,11 @@ export default function GameScreen() {
     setGrid(solutionGrid);
   };
 
+  const handleSave = () => {
+    router.back();
+    saveGameState();
+  };
+
   return (
     <View className="flex-1 bg-[#FDF7E7] justify-start px-[1.5%]">
       <View className="w-full h-[10%] flex-row justify-between items-end ">
@@ -317,8 +325,7 @@ export default function GameScreen() {
           size={28}
           color="#265D5A"
           onPress={() => {
-            router.back();
-            saveGameState();
+            handleSave();
           }}
         />
         <Image
@@ -363,19 +370,13 @@ export default function GameScreen() {
           </View>
 
           <View className="h-[10%]">
-            {isSmallDevice ? (
-              isGridFilled ? (
-                <SudokuButton
-                  isSmallDevice={isSmallDevice}
-                  handleSubmit={handleSubmit}
-                  saveGameState={saveGameState}
-                />
-              ) : null
-            ) : (
+            {/* <TouchableOpacity onPress={() => handleAutoComplete()}>
+              <Text>AutoComplete</Text>
+            </TouchableOpacity> */}
+            {isSmallDevice ? null : (
               <SudokuButton
                 isSmallDevice={isSmallDevice}
-                handleSubmit={handleSubmit}
-                saveGameState={saveGameState}
+                handleSave={handleSave}
               />
             )}
           </View>
