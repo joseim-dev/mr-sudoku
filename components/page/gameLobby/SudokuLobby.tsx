@@ -1,8 +1,10 @@
 import { useAd } from "@/contexts/AdContext/AdContext";
 import { Ionicons } from "@expo/vector-icons";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useFocusEffect } from "@react-navigation/native";
 import { useRouter } from "expo-router";
-import React, { useEffect } from "react";
+import React, { useCallback, useEffect } from "react";
+
 import { ScrollView, Text, TouchableOpacity, View } from "react-native";
 
 export default function SudokuLobby() {
@@ -11,18 +13,16 @@ export default function SudokuLobby() {
     useAd();
   const [isSavedGame, setIsSavedGame] = React.useState(false);
 
-  useEffect(() => {
-    const checkSavedGame = async () => {
-      const saved = await AsyncStorage.getItem("sudokuSavedGame");
-      if (saved) {
-        setIsSavedGame(true);
-      } else {
-        setIsSavedGame(false);
-      }
-    };
+  useFocusEffect(
+    useCallback(() => {
+      const checkSavedGame = async () => {
+        const saved = await AsyncStorage.getItem("sudokuSavedGame");
+        setIsSavedGame(!!saved);
+      };
 
-    checkSavedGame();
-  }, []);
+      checkSavedGame();
+    }, [])
+  );
 
   const difficulties = [
     { key: "easy", base: "easy" },
