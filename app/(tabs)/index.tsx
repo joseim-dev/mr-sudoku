@@ -26,7 +26,7 @@ export default function HomeScreen() {
         />
       </View>
 
-      <View className="w-full items-center justify-center mb-4 h-[220px]">
+      <View className="w-full items-center justify-center mb-4 h-[260px]">
         <Text className="text-[50px] text-[#246965] font-[nunito] font-black text-center">
           MUSTACHE
         </Text>
