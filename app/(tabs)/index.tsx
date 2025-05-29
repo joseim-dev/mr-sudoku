@@ -1,3 +1,4 @@
+import AdCard from "@/components/page/home/AdCard";
 import GameCard from "@/components/page/home/GameCard";
 import { Ionicons } from "@expo/vector-icons";
 import { Image } from "expo-image";
@@ -59,19 +60,18 @@ export default function HomeScreen() {
       </View>
       <View className="w-full flex-row justify-center px-2 gap-[2%] mb-6 ">
         <GameCard
-          title="Wordlee?"
-          image={require("@/assets/images/card-wordRush.png")}
+          title="Wordle?!"
+          image={require("@/assets/images/wordle-icon.png")}
           borderColor="#C5723F"
           cardColor="#412C0D"
           buttonColor="#C5723F"
           gameName="wordle"
         />
-        <GameCard
-          title="Wordlee?"
-          image={require("@/assets/images/card-wordRush.png")}
-          borderColor="#C5723F"
-          cardColor="#412C0D"
-          buttonColor="#C5723F"
+        <AdCard
+          title="Instagram"
+          borderColor="#C53F8F"
+          cardColor="#410D2F"
+          buttonColor="#C53F8F"
           gameName="wordle"
         />
       </View>

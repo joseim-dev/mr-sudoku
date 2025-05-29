@@ -1,6 +1,7 @@
 import wordDataRaw from "@/assets/data/filtered_words_dictionary.json";
 import WordleBoard from "@/components/page/games/wordle/WordleBoard";
 import WordleKeyboard from "@/components/page/games/wordle/WordleKeyboard";
+import WordleKeyboardSmallDevice from "@/components/page/games/wordle/WordleKeyboardSmallDevice";
 import GameHeader from "@/components/ui/GameHeader";
 import { Ionicons } from "@expo/vector-icons";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -9,6 +10,7 @@ import { generate } from "random-words";
 import React, { useEffect, useState } from "react";
 import {
   Alert,
+  Dimensions,
   Image,
   Modal,
   Text,
@@ -33,6 +35,8 @@ export default function Wordle() {
     number
   >;
   const router = useRouter();
+  const screenWidth = Dimensions.get("window").width;
+  const isSmallDevice = screenWidth < 390;
 
   useEffect(() => {
     const loadGame = async () => {
@@ -154,6 +158,10 @@ export default function Wordle() {
         setIsCorrect(didWin);
         setIsGameEnd(true);
         setModalVisible(true);
+        // 저장된 게임 삭제
+        AsyncStorage.removeItem("wordleSavedGame").catch((e) =>
+          console.error("Failed to remove saved game:", e)
+        );
       }
 
       setCurrentGuess("");
@@ -205,18 +213,27 @@ export default function Wordle() {
         </View>
       </View>
       <View className="w-full h-[35%] justify-between items-center pb-8">
-        <View className="w-full h-[80%]">
-          <WordleKeyboard onKeyPress={handleKeyPress} keyStatus={keyStatus} />
-        </View>
-        <TouchableOpacity
-          onPress={handleSubmit}
-          className="h-[18%] bg-[#357A4A] w-[60%] rounded-2xl justify-center items-center"
-        >
-          <Text className="font-[Nunito] font-bold text-2xl text-white">
-            Submit
-          </Text>
-        </TouchableOpacity>
+        {isSmallDevice ? (
+          <WordleKeyboardSmallDevice
+            onKeyPress={handleKeyPress}
+            keyStatus={keyStatus}
+          />
+        ) : (
+          <View className="w-full h-[80%]">
+            <WordleKeyboard onKeyPress={handleKeyPress} keyStatus={keyStatus} />
+
+            <TouchableOpacity
+              onPress={handleSubmit}
+              className="h-[18%] bg-[#357A4A] w-[60%] rounded-2xl justify-center items-center mt-4"
+            >
+              <Text className="font-[Nunito] font-bold text-2xl text-white">
+                Submit
+              </Text>
+            </TouchableOpacity>
+          </View>
+        )}
       </View>
+
       <Modal visible={modalVisible} transparent animationType="fade">
         <View className="flex-1 bg-white/90 justify-center items-center">
           <View className="bg-white w-[80%] py-4 px-6 rounded-2xl items-center border-4 border-[#2B6D69]">

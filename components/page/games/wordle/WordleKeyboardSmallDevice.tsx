@@ -8,12 +8,14 @@ type Props = {
   keyStatus?: Record<string, LetterStatus>; // 알파벳별 상태값
 };
 
+// 각 행 구성: 마지막 줄은 좌측 ENTER, 우측 DEL
 const rows = [
   ["Q", "W", "E", "R", "T", "Y", "U", "I", "O", "P"],
   ["A", "S", "D", "F", "G", "H", "J", "K", "L"],
-  ["Z", "X", "C", "V", "B", "N", "M", "DEL"],
+  ["ENTER", "Z", "X", "C", "V", "B", "N", "M", "DEL"],
 ];
 
+// 상태에 따른 키 색상 지정
 const getKeyColor = (status?: LetterStatus) => {
   switch (status) {
     case "correct":
@@ -27,13 +29,16 @@ const getKeyColor = (status?: LetterStatus) => {
   }
 };
 
-export default function WordleKeyboard({ onKeyPress, keyStatus = {} }: Props) {
+export default function WordleKeyboardSmallDevice({
+  onKeyPress,
+  keyStatus = {},
+}: Props) {
   return (
-    <View className="w-full h-full justify-center items-center px-1">
+    <View className="w-full h-full justify-end items-center px-1">
       {rows.map((row, rowIndex) => (
         <View
           key={rowIndex}
-          className="flex-row justify-center items-between w-full  mb-3"
+          className="flex-row justify-center items-between w-full mb-3"
         >
           {row.map((key) => {
             const status = keyStatus[key];
@@ -43,14 +48,14 @@ export default function WordleKeyboard({ onKeyPress, keyStatus = {} }: Props) {
               <TouchableOpacity
                 key={key}
                 onPress={() => onKeyPress(key)}
-                className="px-2 py-4 rounded-md justify-center items-center mx-[2px] border-[1px] border-gray-300"
+                className=" py-3 rounded-md justify-center items-center mx-[1px] border-[1px] border-gray-300"
                 style={{
-                  minWidth: key === "DEL" ? 50 : 35,
+                  minWidth: key === "ENTER" || key === "DEL" ? 50 : 35,
                   backgroundColor: bgColor,
                 }}
                 activeOpacity={0.9}
               >
-                <Text className="text-xl font-extrabold font-[Nunito] text-black ">
+                <Text className="text-md font-bold font-[Nunito] text-black">
                   {key}
                 </Text>
               </TouchableOpacity>

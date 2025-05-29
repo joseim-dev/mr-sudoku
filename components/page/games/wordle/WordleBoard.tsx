@@ -1,5 +1,5 @@
 import React from "react";
-import { Text, View } from "react-native";
+import { Dimensions, Text, View } from "react-native";
 
 type LetterStatus = "correct" | "present" | "absent";
 
@@ -23,6 +23,9 @@ const getBoxColor = (status?: LetterStatus) => {
   }
 };
 
+const screenWidth = Dimensions.get("window").width;
+const isSmallDevice = screenWidth < 390;
+
 const WordleBoard = ({
   guesses,
   currentGuess,
@@ -43,7 +46,15 @@ const WordleBoard = ({
         {letters.map((letter, colIndex) => {
           const bgColor = getBoxColor(rowColors[colIndex]);
 
-          return (
+          return isSmallDevice ? (
+            <View
+              key={colIndex}
+              className="w-[15%] aspect-square border border-gray-400 rounded-md justify-center items-center"
+              style={{ backgroundColor: bgColor }}
+            >
+              <Text className="text-3xl font-bold text-black">{letter}</Text>
+            </View>
+          ) : (
             <View
               key={colIndex}
               className="w-[17%] aspect-square border border-gray-400 rounded-md justify-center items-center"
