@@ -219,18 +219,23 @@ export default function Wordle() {
             keyStatus={keyStatus}
           />
         ) : (
-          <View className="w-full h-[80%]">
-            <WordleKeyboard onKeyPress={handleKeyPress} keyStatus={keyStatus} />
+          <>
+            <View className="w-full h-[80%] items-center ">
+              <WordleKeyboard
+                onKeyPress={handleKeyPress}
+                keyStatus={keyStatus}
+              />
+            </View>
 
             <TouchableOpacity
               onPress={handleSubmit}
-              className="h-[18%] bg-[#357A4A] w-[60%] rounded-2xl justify-center items-center mt-4"
+              className="h-[17%] bg-[#357A4A] w-[60%] rounded-2xl justify-center items-center"
             >
               <Text className="font-[Nunito] font-bold text-2xl text-white">
                 Submit
               </Text>
             </TouchableOpacity>
-          </View>
+          </>
         )}
       </View>
 
