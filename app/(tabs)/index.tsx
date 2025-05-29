@@ -1,9 +1,9 @@
-import React from "react";
-
 import GameCard from "@/components/page/home/GameCard";
 import { Ionicons } from "@expo/vector-icons";
 import { Image } from "expo-image";
+import React from "react";
 import {
+  FlatList,
   ImageBackground,
   Linking,
   Platform,
@@ -13,9 +13,11 @@ import {
 } from "react-native";
 
 export default function HomeScreen() {
-  return (
-    <View className="flex-1 bg-[#FDF6E5] justify-start items-center ">
-      <View className="h-[12%] w-full flex justify-end items-center pb-4">
+  const data = [{}]; // 스크롤용 더미 데이터
+
+  const renderContent = () => (
+    <View className="flex bg-[#FDF6E5] items-center">
+      <View className="py-6 w-full items-center h-[110px] justify-end">
         <ImageBackground
           source={require("@/assets/images/mustache.png")}
           style={{ width: 30, height: 30 }}
@@ -23,27 +25,24 @@ export default function HomeScreen() {
         />
       </View>
 
-      <View className="h-[24%] w-full flex justify-center items-center">
-        <View className="w-full h-[80%] flex justify-center items-center">
-          <Text className="text-[50px] text-[#246965] font-[nunito] font-black text-center pt-4">
-            MUSTACHE
+      <View className="w-full items-center justify-center mb-4 h-[220px]">
+        <Text className="text-[50px] text-[#246965] font-[nunito] font-black text-center">
+          MUSTACHE
+        </Text>
+        <TouchableOpacity
+          onPress={() =>
+            Linking.openURL("https://www.instagram.com/itsmrsudoku/")
+          }
+          className="flex-row items-center justify-center mt-2"
+        >
+          <Ionicons name="logo-instagram" size={20} color="#7D7D7D" />
+          <Text className="ml-2 text-[18px] font-[Nunito] text-[#7D7D7D] font-semibold">
+            itsmrsudoku
           </Text>
-        </View>
-        <View className="w-full h-[20%] flex justify-center items-center px-4">
-          <TouchableOpacity
-            onPress={() =>
-              Linking.openURL("https://www.instagram.com/itsmrsudoku/")
-            }
-            className="flex-row items-center justify-center mt-2"
-          >
-            <Ionicons name="logo-instagram" size={20} color="#7D7D7D" />
-            <Text className="ml-2 text-[18px] font-[Nunito] text-[#7D7D7D] font-semibold">
-              itsmrsudoku
-            </Text>
-          </TouchableOpacity>
-        </View>
+        </TouchableOpacity>
       </View>
-      <View className="h-[30%] w-full flex-row items-center justify-center android:h-[34%] px-2 gap-[2%] ">
+
+      <View className="w-full flex-row justify-center px-2 gap-[2%] mb-6 ">
         <GameCard
           title="MR.SUDOKU"
           image={require("@/assets/images/card-mustache.png")}
@@ -58,25 +57,53 @@ export default function HomeScreen() {
           gameName="wordRush"
         />
       </View>
-      <View className="h-[28%] w-full px-4 flex justify-start items-center">
+      <View className="w-full flex-row justify-center px-2 gap-[2%] mb-6 ">
+        <GameCard
+          title="Wordlee?"
+          image={require("@/assets/images/card-wordRush.png")}
+          borderColor="#C5723F"
+          cardColor="#412C0D"
+          buttonColor="#C5723F"
+          gameName="wordle"
+        />
+        <GameCard
+          title="Wordlee?"
+          image={require("@/assets/images/card-wordRush.png")}
+          borderColor="#C5723F"
+          cardColor="#412C0D"
+          buttonColor="#C5723F"
+          gameName="wordle"
+        />
+      </View>
+
+      <View className="w-full px-4 mb-6">
         <View className="w-full aspect-[2]">
           <Image
-            style={{ width: "100%", height: "100%" }} // className 대신 style 사용
+            style={{ width: "100%", height: "100%" }}
             source={{
               uri: "https://ljgohbrmnjtyvkyimdyb.supabase.co/storage/v1/object/public/elements//home-main-card.png",
             }}
-            contentFit="contain" // resizeMode에 해당
-            transition={300} // optional: 로딩 시 fade-in 효과
-            placeholder={require("@/assets/images/home-main-card.png")} // optional: 로딩 중 이미지
-            placeholderContentFit="contain" // optional: 로딩 중 이미지 resizeMode
+            contentFit="contain"
+            transition={300}
+            placeholder={require("@/assets/images/home-main-card.png")}
+            placeholderContentFit="contain"
             cachePolicy="none"
           />
         </View>
       </View>
 
-      {Platform.OS === "ios" ? (
-        <View className="w-full h-[6%] bg-slate-500" />
-      ) : null}
+      {Platform.OS === "ios" ? <View className="w-full h-[100px] " /> : null}
     </View>
+  );
+
+  return (
+    <FlatList
+      data={data}
+      renderItem={() => null}
+      keyExtractor={(_, index) => index.toString()}
+      ListHeaderComponent={renderContent}
+      showsVerticalScrollIndicator={false}
+      contentContainerStyle={{ paddingBottom: 24 }}
+    />
   );
 }

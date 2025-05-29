@@ -18,6 +18,12 @@ export default function GamesLayout() {
         }}
       />
       <Stack.Screen
+        name="wordle"
+        options={{
+          headerShown: false,
+        }}
+      />
+      <Stack.Screen
         name="sudoku"
         options={{
           headerShown: false,
