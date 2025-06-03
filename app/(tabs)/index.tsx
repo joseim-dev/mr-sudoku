@@ -17,7 +17,7 @@ export default function HomeScreen() {
   const data = [{}]; // 스크롤용 더미 데이터
 
   const renderContent = () => (
-    <View className="flex bg-[#FDF6E5] items-center">
+    <View className="flex bg-[#FDF6E5] dark:bg-mainBlack items-center">
       <View className="py-6 w-full items-center h-[110px] justify-end">
         <ImageBackground
           source={require("@/assets/images/mustache.png")}
@@ -27,7 +27,7 @@ export default function HomeScreen() {
       </View>
 
       <View className="w-full items-center justify-center mb-4 h-[260px]">
-        <Text className="text-[50px] text-[#246965] font-[nunito] font-black text-center">
+        <Text className="text-[50px] text-mainGreen dark:text-white font-[nunito] font-black text-center">
           MUSTACHE
         </Text>
         <TouchableOpacity

@@ -3,30 +3,28 @@ import React from "react";
 import { Platform } from "react-native";
 
 import { IconSymbol } from "@/components/ui/IconSymbol";
+import { useColorScheme } from "@/hooks/useColorScheme";
 import { Ionicons } from "@expo/vector-icons";
 
 export default function TabLayout() {
+  const colorScheme = useColorScheme();
   return (
     <Tabs
       screenOptions={{
-        // tabBarActiveTintColor: Colors[colorScheme ?? "light"].tint,
-        tabBarActiveTintColor: "#265D5A",
-
+        tabBarActiveTintColor: colorScheme === "dark" ? "#5FB085" : "#265D5A", // 다크모드용 메인컬러
         headerShown: false,
-        // tabBarButton: HapticTab,
-        // tabBarBackground: TabBarBackground,
         tabBarStyle: Platform.select({
           ios: {
             position: "absolute",
-            backgroundColor: "#FDF6E5",
-            borderTopWidth: 1, // ✅ 상단 테두리 추가
-            borderTopColor: "#D1D5DB", // ✅ 회색 (Tailwind 'gray-300'에 해당)
+            backgroundColor: colorScheme === "dark" ? "#1D1D1D" : "#FDF6E5", // 다크: mainBlack
+            borderTopWidth: 1,
+            borderTopColor: colorScheme === "dark" ? "#333" : "#D1D5DB", // 다크: 더 어두운 그레이
             elevation: 0,
           },
           android: {
-            backgroundColor: "#FDF6E5",
+            backgroundColor: colorScheme === "dark" ? "#1D1D1D" : "#FDF6E5",
             borderTopWidth: 1,
-            borderTopColor: "#D1D5DB",
+            borderTopColor: colorScheme === "dark" ? "#333" : "#D1D5DB",
             elevation: 0,
           },
         }),

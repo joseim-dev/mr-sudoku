@@ -10,7 +10,7 @@ module.exports = {
         subDarkGreen: "#1B4529",
         mainWhite: "#FDF6E5",
         subLightGreen: "#5FB085",
-        mainBlack: "#1D1D1D",
+        mainBlack: "#121212",
         subGreen: "#357A4A",
         subNavy: "#345977",
         subLightNavy: "#6398DA",
