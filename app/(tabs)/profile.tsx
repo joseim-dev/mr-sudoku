@@ -1,28 +1,30 @@
-import PasswordModal from "@/components/Modal/PasswordModal";
-import Product from "@/components/page/profile/Product";
-import { fetchMonthlyProducts } from "@/utils/fetchMonthlyProducts";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useFocusEffect } from "@react-navigation/native";
 import { useRouter } from "expo-router";
+import { useColorScheme } from "nativewind";
 import React, { useCallback, useEffect, useState } from "react";
 import {
   Image,
   Platform,
   SafeAreaView,
   ScrollView,
-  StyleSheet,
   Text,
   TouchableOpacity,
   View,
 } from "react-native";
 
+import PasswordModal from "@/components/Modal/PasswordModal";
+import Product from "@/components/page/profile/Product";
+import { fetchMonthlyProducts } from "@/utils/fetchMonthlyProducts";
+
 export default function SettingsScreen() {
   const [userExp, setUserExp] = useState(0);
   const [userCoins, setUserCoins] = useState(0);
   const [modalVisible, setModalVisible] = useState(false);
-
   const [products, setProducts] = useState([]);
+
   const router = useRouter();
+  const { colorScheme, toggleColorScheme } = useColorScheme();
 
   useEffect(() => {
     const loadData = async () => {
@@ -40,135 +42,83 @@ export default function SettingsScreen() {
         setUserExp(parseInt(exp || "0", 10));
         setUserCoins(parseInt(coins || "0", 10));
       };
-
       loadUserStats();
     }, [])
   );
 
   return (
-    <SafeAreaView style={styles.container}>
-      <ScrollView contentContainerStyle={styles.inner}>
-        {/* 🔄 타이틀 이미지로 대체 */}
+    <SafeAreaView className="flex-1 bg-mainWhite dark:bg-mainBlack">
+      <ScrollView contentContainerStyle={{ padding: 24, alignItems: "center" }}>
+        {/* Title Image */}
         <TouchableOpacity
           onLongPress={() => setModalVisible(true)}
           activeOpacity={0.99}
         >
           <Image
             source={require("../../assets/images/mustache.png")}
-            style={styles.titleImage}
+            className="w-[240px] h-[80px] mb-6"
             resizeMode="contain"
           />
         </TouchableOpacity>
 
-        <View
-          style={[
-            styles.card,
-            {
-              flexDirection: "row",
-              alignItems: "center",
-              justifyContent: "space-between",
-            },
-          ]}
-        >
-          <Text style={styles.cardTitle}>Experience</Text>
-          <View style={{ flexDirection: "row", alignItems: "center" }}>
-            <Text style={styles.cardValue}>{userExp} EXP</Text>
-          </View>
+        {/* EXP Card */}
+        <View className="bg-white dark:bg-subDarkGreen rounded-2xl w-full h-[70px] mb-4 flex-row items-center justify-between px-5 shadow-md">
+          <Text className="text-lg font-bold text-gray-700 dark:text-mainWhite font-nunito">
+            Experience
+          </Text>
+          <Text className="text-xl font-bold text-mainGreen dark:text-subLightGreen">
+            {userExp} EXP
+          </Text>
         </View>
 
-        <View
-          style={[
-            styles.card,
-            {
-              flexDirection: "row",
-              alignItems: "center",
-              justifyContent: "space-between",
-            },
-          ]}
-        >
-          <Text style={styles.cardTitle}>Mustache</Text>
-          <View style={{ flexDirection: "row", alignItems: "center" }}>
+        {/* Coins Card */}
+        <View className="bg-white dark:bg-subDarkGreen rounded-2xl w-full h-[70px] mb-4 flex-row items-center justify-between px-5 shadow-md">
+          <Text className="text-lg font-bold text-gray-700 dark:text-mainWhite font-nunito">
+            Mustache
+          </Text>
+          <View className="flex-row items-center">
             <Image
               source={require("../../assets/images/mustache.png")}
-              style={[styles.mustacheIcon, { marginRight: 8 }]}
+              className="w-6 h-6 mr-2"
               resizeMode="contain"
             />
-            <Text style={styles.cardValue}>{userCoins}</Text>
+            <Text className="text-xl font-bold text-mainGreen dark:text-subLightGreen">
+              {userCoins}
+            </Text>
           </View>
         </View>
 
+        {/* 다크모드 토글 버튼 */}
+        <View className="w-full items-end mb-4">
+          <TouchableOpacity
+            onPress={toggleColorScheme}
+            className="px-4 py-2 rounded-full bg-subLightGreen dark:bg-subPink"
+          >
+            <Text className="text-white font-semibold">
+              {colorScheme === "dark" ? "라이트 모드로" : "다크 모드로"}
+            </Text>
+          </TouchableOpacity>
+        </View>
+
+        {/* Product & Stamp Button */}
         <Product />
         <TouchableOpacity
-          style={styles.stampButton}
+          className="mt-5 w-[95%] bg-white dark:bg-subDarkGreen py-3 px-6 rounded-full border-2 border-subLightGreen dark:border-subLightGreen items-center "
           onPress={() => router.push("/stamps")}
           activeOpacity={0.85}
         >
-          <Text style={styles.stampButtonText}>See my stamps</Text>
+          <Text className="text-base font-bold text-mainGreen dark:text-subLightGreen">
+            See my stamps
+          </Text>
         </TouchableOpacity>
 
+        {/* Password Modal */}
         <PasswordModal
           visible={modalVisible}
           onClose={() => setModalVisible(false)}
         />
-
-        <View className="w-full h-[50px]"></View>
+        <View className="w-full h-[50px]" />
       </ScrollView>
     </SafeAreaView>
   );
 }
-
-const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: "#FDF6E5" },
-  inner: { padding: 24, alignItems: "center" },
-  titleImage: {
-    width: 240,
-    height: 80,
-    marginBottom: 24,
-  },
-  card: {
-    backgroundColor: "#fff",
-    borderRadius: 16,
-    paddingHorizontal: 20,
-    height: 70,
-    marginBottom: 16,
-    width: "100%",
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.1,
-    shadowRadius: 3,
-    elevation: 4,
-  },
-  cardTitle: {
-    fontSize: 18,
-    fontWeight: "700",
-    color: "#444",
-    fontFamily: "Nunito",
-  },
-  cardValue: {
-    fontSize: 20,
-    fontWeight: "bold",
-    color: "#265D5A",
-  },
-
-  mustacheIcon: {
-    width: 24,
-    height: 24,
-  },
-  stampButton: {
-    marginTop: 20,
-    width: "95%",
-    backgroundColor: "#fff",
-    paddingVertical: 14,
-    paddingHorizontal: 24,
-    borderRadius: 30,
-    elevation: 3,
-    alignItems: "center",
-    borderWidth: 2,
-    borderColor: "#A4C3BD",
-  },
-  stampButtonText: {
-    fontSize: 16,
-    fontWeight: "700",
-    color: "#265D5A",
-  },
-});
