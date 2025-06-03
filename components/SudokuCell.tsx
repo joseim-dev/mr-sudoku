@@ -39,7 +39,7 @@ const darkTheme = {
   mistakeCell: "#5c2c2c",
   cellText: "#A1A1A1",
   memoText: "#bbb",
-  userCorrectCell: "#66CA4A",
+  userCorrectCell: "#42965B",
   highlightedCell: "#334d3450",
   matchedNumberCell: "#334d34",
   mistakeText: "#FF6B6B",

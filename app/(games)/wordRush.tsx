@@ -400,8 +400,8 @@ export default function WordRushScreen() {
         </TouchableOpacity>
       </View>
       <Modal visible={modalVisible} transparent animationType="fade">
-        <View className="flex-1 bg-white/90 justify-center items-center">
-          <View className="bg-white w-[80%] py-4 px-6 rounded-2xl items-center border-4 border-[#2B6D69]">
+        <View className="flex-1 bg-white/90 justify-center items-center dark:bg-black/80">
+          <View className="bg-white w-[80%] py-4 px-6 rounded-2xl items-center border-4 border-[#2B6D69] dark:bg-mainBlack">
             <Image
               source={
                 colorScheme === "dark"
@@ -411,7 +411,7 @@ export default function WordRushScreen() {
               className="w-[50px] h-[50px] mb-4"
               resizeMode="contain"
             />
-            <Text className="text-[30px] font-extrabold text-[#1B3145] mb-2 font-[nunito]">
+            <Text className="text-[30px] font-extrabold text-[#1B3145] mb-2 font-[nunito] dark:text-mainWhite">
               {isGameEnd ? "Mustache!" : "Game Over"}
             </Text>
 
@@ -431,7 +431,7 @@ export default function WordRushScreen() {
                   Your Score: {streak}
                 </Text>
                 {highScore !== null && (
-                  <Text className="text-[16px] font-[nunito] text-gray-600 mb-3">
+                  <Text className="text-[16px] font-[nunito] text-gray-600 mb-3 dark:text-subGray">
                     Best Score: {highScore}
                   </Text>
                 )}
