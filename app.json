@@ -11,7 +11,6 @@
     "ios": {
       "supportsTablet": false,
       "icon": "./assets/images/icon-ios.png",
-
       "bundleIdentifier": "com.mr.sudoku",
       "infoPlist": {
         "NSUserTrackingUsageDescription": "This identifier will be used to deliver personalized ads to you.",
@@ -27,7 +26,9 @@
       "edgeToEdgeEnabled": true,
       "package": "com.mr.sudoku",
       "versionCode": 1,
-      "permissions": ["com.google.android.gms.permission.AD_ID"]
+      "permissions": [
+        "com.google.android.gms.permission.AD_ID"
+      ]
     },
     "web": {
       "bundler": "metro",
@@ -111,7 +112,8 @@
         }
       ],
       "expo-tracking-transparency",
-      "expo-localization"
+      "expo-localization",
+      "expo-secure-store"
     ],
     "experiments": {
       "typedRoutes": true

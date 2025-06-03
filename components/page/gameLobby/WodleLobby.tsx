@@ -1,4 +1,5 @@
 import { useAd } from "@/contexts/AdContext/AdContext";
+import { isAdsRemoved } from "@/utils/SecureStore/adsRemovedStore";
 import { Ionicons } from "@expo/vector-icons";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useFocusEffect } from "@react-navigation/native";
@@ -13,7 +14,8 @@ export default function WordleLobby() {
   const [isSavedGame, setIsSavedGame] = React.useState(false);
 
   const handleStart = async () => {
-    if (isStartAdLoaded) {
+    const adsRemoved = await isAdsRemoved(); // ✅ 추가
+    if (isStartAdLoaded && !adsRemoved) {
       showStartAd();
     } else {
       router.push("/(games)/wordle");
@@ -49,6 +51,7 @@ export default function WordleLobby() {
   );
 
   const handleNewGame = async () => {
+    const adsRemoved = await isAdsRemoved(); // ✅ 추가
     try {
       await AsyncStorage.removeItem("wordleSavedGame");
     } catch (e) {
@@ -58,7 +61,7 @@ export default function WordleLobby() {
       );
     }
 
-    if (isStartAdLoaded) {
+    if (isStartAdLoaded && !adsRemoved) {
       showStartAd();
     } else {
       router.push("/(games)/wordle");

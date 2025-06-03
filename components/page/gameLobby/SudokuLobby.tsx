@@ -1,4 +1,5 @@
 import { useAd } from "@/contexts/AdContext/AdContext";
+import { isAdsRemoved } from "@/utils/SecureStore/adsRemovedStore";
 import { Ionicons } from "@expo/vector-icons";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useFocusEffect } from "@react-navigation/native";
@@ -36,7 +37,8 @@ export default function SudokuLobby() {
   const handleContinueGame = async () => {
     const savedGame = await AsyncStorage.getItem("sudokuSavedGame");
     if (savedGame) {
-      if (isStartAdLoaded) {
+      const removed = await isAdsRemoved(); // ✅ await로 결과 받아오기
+      if (isStartAdLoaded && !removed) {
         showStartAd();
       } else {
         router.push("/(games)/sudoku");
@@ -57,7 +59,8 @@ export default function SudokuLobby() {
     await AsyncStorage.setItem("sudokuDifficulty", base);
     await AsyncStorage.setItem("sudokuDifficultyLabel", key);
 
-    if (isStartAdLoaded) {
+    const removed = await isAdsRemoved(); // ✅ 추가
+    if (isStartAdLoaded && !removed) {
       showStartAd();
     } else {
       router.push("/(games)/sudoku");

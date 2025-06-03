@@ -1,3 +1,5 @@
+import PasswordModal from "@/components/Modal/PasswordModal";
+import { fetchMonthlyProducts } from "@/utils/fetchMonthlyProducts";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useFocusEffect } from "@react-navigation/native";
 import { useRouter } from "expo-router";
@@ -12,9 +14,6 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-
-import PasswordModal from "@/components/Modal/PasswordModal";
-import { fetchMonthlyProducts } from "@/utils/fetchMonthlyProducts";
 
 export default function SettingsScreen() {
   const [userExp, setUserExp] = useState(0);

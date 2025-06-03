@@ -1,4 +1,5 @@
 import { useAd } from "@/contexts/AdContext/AdContext";
+import { isAdsRemoved } from "@/utils/SecureStore/adsRemovedStore";
 import { Ionicons } from "@expo/vector-icons";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useRouter } from "expo-router";
@@ -14,7 +15,9 @@ export default function WordRushLobby() {
 
   const handleSelectLetterCount = async (count: number) => {
     await AsyncStorage.setItem("wordRushLetterCount", count.toString());
-    if (isStartAdLoaded) {
+    const adsRemoved = await isAdsRemoved(); // ✅ 추가
+
+    if (isStartAdLoaded && !adsRemoved) {
       showStartAd();
     } else {
       router.push("/(games)/wordRush");

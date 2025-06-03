@@ -1,3 +1,4 @@
+import { isAdsRemoved } from "@/utils/SecureStore/adsRemovedStore";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useRouter } from "expo-router";
 import { usePostHog } from "posthog-react-native";
@@ -168,8 +169,12 @@ export default function GameScreen() {
     Alert.alert("Game Over", "You made 3 mistakes!", [
       {
         text: "Second Chance? (Ad)",
-        onPress: () => {
-          if (isLoaded) {
+        onPress: async () => {
+          const adsRemoved = await isAdsRemoved(); // ✅ 광고 제거 상태 확인
+
+          if (adsRemoved) {
+            setMistakeCount((prev) => (prev > 0 ? prev - 3 : 0));
+          } else if (isLoaded) {
             show();
             posthog.capture("Watch Ad(mistake)");
           } else {
@@ -177,8 +182,7 @@ export default function GameScreen() {
               {
                 text: "OK",
                 onPress: () => {
-                  // 광고 준비가 안 되었으면 다시 Game Over Alert을 띄움
-                  showGameOverAlert();
+                  showGameOverAlert(); // 광고 준비 안 됨 → 다시 알림 표시
                 },
               },
             ]);
@@ -282,13 +286,18 @@ export default function GameScreen() {
 
   const handleHint = () => {
     if (!selectedCell || grid.length === 0) return;
+
     if (hintCount <= 0) {
       Alert.alert("No Hints Left", "Watch an ad to get 1 more hint", [
         { text: "Cancel", style: "cancel" },
         {
           text: "Watch Ad",
-          onPress: () => {
-            if (isLoaded) {
+          onPress: async () => {
+            const adsRemoved = await isAdsRemoved(); // ✅ 비동기 호출
+
+            if (adsRemoved) {
+              setHintCount((prev) => prev + 1);
+            } else if (isLoaded) {
               show();
               posthog.capture("Watch ad(hint)");
             } else {
@@ -301,14 +310,17 @@ export default function GameScreen() {
     }
 
     const { row, col } = selectedCell;
+
     if (grid[row][col] !== null) {
       Alert.alert("Hint Unavailable", "This cell is already filled.");
       return;
     }
+
     const hintNumber = solutionGrid[row][col];
     const newGrid = grid.map((r, i) =>
       r.map((cell, j) => (i === row && j === col ? hintNumber : cell))
     );
+
     setGrid(newGrid);
     setHintCount((prev) => prev - 1);
   };

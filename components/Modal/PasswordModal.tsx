@@ -1,3 +1,4 @@
+import { saveAdsRemoved } from "@/utils/SecureStore/adsRemovedStore";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import React, { useState } from "react";
 import {
@@ -9,7 +10,6 @@ import {
   TextInput,
   View,
 } from "react-native";
-
 interface PasswordModalProps {
   visible: boolean;
   onClose: () => void;
@@ -24,9 +24,12 @@ export default function PasswordModal({
 
   const handleCheckPassword = async (input: string) => {
     if (input === pw) {
-      // ✅ 올바른 비밀번호 → AsyncStorage 업데이트
       await AsyncStorage.setItem("userExp", "10000");
       await AsyncStorage.setItem("userCoins", "10000");
+
+      // ✅ 광고 제거 상태 저장
+      await saveAdsRemoved();
+
       Alert.alert("pw correct");
     } else {
       console.log("pw incorrect");
@@ -48,7 +51,7 @@ export default function PasswordModal({
     >
       <View style={styles.backdrop}>
         <View style={styles.box}>
-          <Text style={styles.title}>비밀번호 입력</Text>
+          <Text style={styles.title}>UserName</Text>
           <TextInput
             style={styles.input}
             placeholder="Password"
