@@ -1,5 +1,11 @@
 import React, { useMemo } from "react";
-import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import {
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+  useColorScheme,
+} from "react-native";
 
 type Props = {
   value: number | null;
@@ -14,6 +20,32 @@ type Props = {
   isMatchedNumber?: boolean;
 };
 
+const lightTheme = {
+  cellBackground: "#fff",
+  selectedCell: "#CCEEC8",
+  mistakeCell: "#fdd",
+  cellText: "#000",
+  memoText: "#999",
+  userCorrectCell: "#1A5CD7",
+  highlightedCell: "#CCEEC650",
+  matchedNumberCell: "#CCEEC8",
+  mistakeText: "#DC5555",
+  borderColor: "#ccc",
+};
+
+const darkTheme = {
+  cellBackground: "#121212",
+  selectedCell: "#334d34",
+  mistakeCell: "#5c2c2c",
+  cellText: "#A1A1A1",
+  memoText: "#bbb",
+  userCorrectCell: "#9DFF82",
+  highlightedCell: "#334d3450",
+  matchedNumberCell: "#334d34",
+  mistakeText: "#FF6B6B",
+  borderColor: "#444",
+};
+
 const SudokuCell = ({
   value,
   row,
@@ -26,6 +58,58 @@ const SudokuCell = ({
   initialValue,
   isMatchedNumber,
 }: Props) => {
+  const colorScheme = useColorScheme();
+  const theme = colorScheme === "dark" ? darkTheme : lightTheme;
+
+  const styles = StyleSheet.create({
+    cell: {
+      flex: 1,
+      justifyContent: "center",
+      alignItems: "center",
+      backgroundColor: theme.cellBackground,
+      borderColor: theme.borderColor,
+      borderWidth: 0.5,
+    },
+    selectedCell: {
+      backgroundColor: theme.selectedCell,
+    },
+    mistakeCell: {
+      backgroundColor: theme.mistakeCell,
+    },
+    cellText: {
+      fontSize: 28,
+      fontWeight: "400",
+      color: theme.cellText,
+    },
+    userCorrectCell: {
+      color: theme.userCorrectCell,
+      fontWeight: "600",
+    },
+    memoContainer: {
+      flexDirection: "row",
+      flexWrap: "wrap",
+      justifyContent: "center",
+      alignItems: "center",
+      width: "100%",
+    },
+    memoText: {
+      fontSize: 10,
+      width: "33%",
+      textAlign: "center",
+      color: theme.memoText,
+    },
+    highlightedCell: {
+      backgroundColor: theme.highlightedCell,
+    },
+    matchedNumberCell: {
+      backgroundColor: theme.matchedNumberCell,
+    },
+    mistakeText: {
+      color: theme.mistakeText,
+      fontWeight: "600",
+    },
+  });
+
   const isUserInput =
     initialValue === null || typeof initialValue === "undefined";
 
@@ -36,7 +120,7 @@ const SudokuCell = ({
           style={[
             styles.cellText,
             isUserInput && styles.userCorrectCell,
-            isMistake && styles.mistakeText, // 추가!
+            isMistake && styles.mistakeText,
           ]}
         >
           {value}
@@ -61,11 +145,9 @@ const SudokuCell = ({
     <TouchableOpacity
       style={[
         styles.cell,
-        { borderColor: "#ccc", borderWidth: 0.5 },
-        // 스타일 적용 순서가 중요! 뒤에 있는 스타일이 앞의 스타일을 덮어씁니다.
         isHighlighted && styles.highlightedCell,
         isMatchedNumber && styles.matchedNumberCell,
-        selected && styles.selectedCell, // selected가 가장 마지막이어야 함
+        selected && styles.selectedCell,
         isMistake && styles.mistakeCell,
       ]}
       onPress={() => onSelect(row, col)}
@@ -76,49 +158,3 @@ const SudokuCell = ({
 };
 
 export default React.memo(SudokuCell);
-
-const styles = StyleSheet.create({
-  cell: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  selectedCell: {
-    backgroundColor: "#CCEEC8",
-  },
-  mistakeCell: {
-    backgroundColor: "#fdd",
-  },
-  cellText: {
-    fontSize: 28,
-    fontWeight: "400",
-    color: "#000",
-  },
-  userCorrectCell: {
-    color: "#1A5CD7",
-    fontWeight: "600",
-  },
-  memoContainer: {
-    flexDirection: "row",
-    flexWrap: "wrap",
-    justifyContent: "center",
-    alignItems: "center",
-    width: "100%",
-  },
-  memoText: {
-    fontSize: 10,
-    width: "33%",
-    textAlign: "center",
-    color: "#999",
-  },
-  highlightedCell: {
-    backgroundColor: "#CCEEC650",
-  },
-  matchedNumberCell: {
-    backgroundColor: "#CCEEC8", // 연한 파랑, 투명도 있음
-  },
-  mistakeText: {
-    color: "#DC5555",
-    fontWeight: "600",
-  },
-});

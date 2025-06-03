@@ -18,6 +18,7 @@ module.exports = {
         subPink: "#C53F8F",
         subLightPink: "#F17FC8",
         subDarkPink: "#410D2F",
+        subGray: "#737373",
       },
     },
   },

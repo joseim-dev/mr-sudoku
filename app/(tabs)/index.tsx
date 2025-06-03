@@ -27,7 +27,7 @@ export default function HomeScreen() {
       </View>
 
       <View className="w-full items-center justify-center mb-4 h-[260px]">
-        <Text className="text-[50px] text-mainGreen dark:text-white font-[nunito] font-black text-center">
+        <Text className="text-[50px] text-mainGreen dark:text-mainWhite font-[nunito] font-black text-center">
           MUSTACHE
         </Text>
         <TouchableOpacity

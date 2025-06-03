@@ -356,7 +356,7 @@ export default function GameScreen() {
   };
 
   return (
-    <View className="flex-1 bg-[#FDF7E7] justify-start px-[1.5%]">
+    <View className="flex-1 bg-[#FDF7E7] justify-start px-[1.5%] dark:bg-mainBlack">
       <View className="w-full h-[10%] flex-row justify-between items-end ">
         <Ionicons
           name="chevron-back-outline"

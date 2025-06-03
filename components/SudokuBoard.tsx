@@ -61,20 +61,20 @@ function SudokuBoard({
     : null;
 
   return (
-    <View className="w-full h-fit flex justify-center">
+    <View className="w-full h-fit flex justify-center ">
       <View className="flex-row justify-between items-end mb-1.5 h-fit">
-        <Text className="text-[16px] text-[#444]">
+        <Text className="text-[16px] text-[#444] dark:text-subGray">
           🔥 {difficultyLabel.toString().toUpperCase()}
         </Text>
-        <Text className="text-[16px] text-[#444]">
+        <Text className="text-[16px] text-[#444] dark:text-subGray">
           Mistake: {mistakeCount}/3
         </Text>
-        <Text className="text-[16px] text-[#444]">
+        <Text className="text-[16px] text-[#444] dark:text-subGray">
           Time: {formatTime(time)}
         </Text>
       </View>
       <Animated.View
-        className="w-full aspect-square border-2 border-[#424550] bg-[#FDF6E5]"
+        className="w-full aspect-square border-2 border-[#424550] bg-[#FDF6E5] dark:bg-mainBlack dark:border-subGray dark:border-[1px]"
         style={{ transform: [{ translateX: shakeAnim }] }}
       >
         {grid.map((row, rowIndex) => (
@@ -133,14 +133,14 @@ function SudokuBoard({
           {[1, 2].map((i) => (
             <View
               key={`h-${i}`}
-              className="absolute left-0 right-0 h-[2px] bg-[#424550]"
+              className="absolute left-0 right-0 h-[1.5px] bg-[#424550] dark:bg-subGray dark:h-[1px]"
               style={{ top: `${(i * 100) / 3}%` }}
             />
           ))}
           {[1, 2].map((i) => (
             <View
               key={`v-${i}`}
-              className="absolute top-0 bottom-0 w-[2px] bg-[#424550]"
+              className="absolute top-0 bottom-0 w-[1.5px] bg-[#424550] dark:bg-subGray dark:w-[1px]"
               style={{ left: `${(i * 100) / 3}%` }}
             />
           ))}
