@@ -1,5 +1,6 @@
 import AdCard from "@/components/page/home/AdCard";
 import GameCard from "@/components/page/home/GameCard";
+import { useColorScheme } from "@/hooks/useColorScheme";
 import { Ionicons } from "@expo/vector-icons";
 import { Image } from "expo-image";
 import React from "react";
@@ -15,12 +16,17 @@ import {
 
 export default function HomeScreen() {
   const data = [{}]; // 스크롤용 더미 데이터
+  const colorScheme = useColorScheme();
 
   const renderContent = () => (
     <View className="flex bg-[#FDF6E5] dark:bg-mainBlack items-center">
       <View className="py-6 w-full items-center h-[110px] justify-end">
         <ImageBackground
-          source={require("@/assets/images/mustache.png")}
+          source={
+            colorScheme === "dark"
+              ? require("@/assets/images/mustache-white.png")
+              : require("@/assets/images/mustache.png")
+          }
           style={{ width: 30, height: 30 }}
           resizeMode="contain"
         />

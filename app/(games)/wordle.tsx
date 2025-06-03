@@ -18,6 +18,8 @@ import {
   View,
 } from "react-native";
 
+import { useColorScheme } from "@/hooks/useColorScheme";
+
 type LetterStatus = "correct" | "present" | "absent";
 type KeyStatusMap = Record<string, LetterStatus>;
 
@@ -37,6 +39,7 @@ export default function Wordle() {
   const router = useRouter();
   const screenWidth = Dimensions.get("window").width;
   const isSmallDevice = screenWidth < 390;
+  const colorScheme = useColorScheme();
 
   useEffect(() => {
     const loadGame = async () => {
@@ -245,7 +248,11 @@ export default function Wordle() {
         <View className="flex-1 bg-white/90 justify-center items-center dark:bg-black/80">
           <View className="bg-white w-[80%] py-4 px-6 rounded-2xl items-center border-4 border-[#2B6D69] dark:bg-mainBlack">
             <Image
-              source={require("@/assets/images/mustache.png")}
+              source={
+                colorScheme === "dark"
+                  ? require("@/assets/images/mustache-white.png")
+                  : require("@/assets/images/mustache.png")
+              }
               className="w-[50px] h-[50px] mb-4"
               resizeMode="contain"
             />

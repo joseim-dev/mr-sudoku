@@ -14,7 +14,6 @@ import {
 } from "react-native";
 
 import PasswordModal from "@/components/Modal/PasswordModal";
-import Product from "@/components/page/profile/Product";
 import { fetchMonthlyProducts } from "@/utils/fetchMonthlyProducts";
 
 export default function SettingsScreen() {
@@ -55,8 +54,12 @@ export default function SettingsScreen() {
           activeOpacity={0.99}
         >
           <Image
-            source={require("../../assets/images/mustache.png")}
-            className="w-[240px] h-[80px] mb-6"
+            source={
+              colorScheme === "dark"
+                ? require("@/assets/images/mustache-white.png")
+                : require("@/assets/images/mustache.png")
+            }
+            className="w-[50px] h-[60px] mb-6"
             resizeMode="contain"
           />
         </TouchableOpacity>
@@ -89,19 +92,22 @@ export default function SettingsScreen() {
         </View>
 
         {/* 다크모드 토글 버튼 */}
-        <View className="w-full items-end mb-4">
+        <View className="w-full mb-4 flex-row justify-between items-center mt-6">
+          <Text className="font-[Nunito] text-mainBlack text-xl font-bold dark:text-white">
+            Dark Mode
+          </Text>
           <TouchableOpacity
             onPress={toggleColorScheme}
-            className="px-4 py-2 rounded-full bg-subLightGreen dark:bg-subPink"
+            className="px-4 py-2 rounded-full bg-subPink dark:bg-subLightGreen"
           >
             <Text className="text-white font-semibold">
-              {colorScheme === "dark" ? "라이트 모드로" : "다크 모드로"}
+              {colorScheme === "dark" ? "On" : "Off"}
             </Text>
           </TouchableOpacity>
         </View>
 
         {/* Product & Stamp Button */}
-        <Product />
+        {/* <Product />
         <TouchableOpacity
           className="mt-5 w-[95%] bg-white dark:bg-subDarkGreen py-3 px-6 rounded-full border-2 border-subLightGreen dark:border-subLightGreen items-center "
           onPress={() => router.push("/stamps")}
@@ -110,7 +116,7 @@ export default function SettingsScreen() {
           <Text className="text-base font-bold text-mainGreen dark:text-subLightGreen">
             See my stamps
           </Text>
-        </TouchableOpacity>
+        </TouchableOpacity> */}
 
         {/* Password Modal */}
         <PasswordModal

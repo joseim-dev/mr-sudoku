@@ -20,6 +20,7 @@ import SudokuButton from "@/components/page/games/sudoku/SudokuButton";
 import SudokuToolBar from "@/components/page/games/sudoku/SudokuToolBar";
 import SudokuBoard from "@/components/SudokuBoard";
 import { sudokuRewardedAdId } from "@/constants/adIds";
+import { useColorScheme } from "@/hooks/useColorScheme";
 import { generatePuzzle, Grid, solveSudoku } from "@/lib/sudoku";
 import { calculateReward } from "@/utils/game/reward";
 import { formatTime } from "@/utils/game/time";
@@ -30,7 +31,7 @@ import { useRewardedAd } from "react-native-google-mobile-ads";
 export default function GameScreen() {
   const posthog = usePostHog();
   const { height } = useWindowDimensions();
-
+  const colorScheme = useColorScheme();
   const isSmallDevice = height < 700;
 
   const router = useRouter();
@@ -361,13 +362,17 @@ export default function GameScreen() {
         <Ionicons
           name="chevron-back-outline"
           size={28}
-          color="#265D5A"
+          color={colorScheme === "dark" ? "white" : "#265D5A"}
           onPress={() => {
             handleSave();
           }}
         />
         <Image
-          source={require("@/assets/images/mustache.png")}
+          source={
+            colorScheme === "dark"
+              ? require("@/assets/images/mustache-white.png")
+              : require("@/assets/images/mustache.png")
+          }
           style={{ width: 120, height: 30, resizeMode: "contain" }}
         />
         <View className="w-[24px]" />

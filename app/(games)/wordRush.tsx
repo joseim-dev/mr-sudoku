@@ -403,7 +403,11 @@ export default function WordRushScreen() {
         <View className="flex-1 bg-white/90 justify-center items-center">
           <View className="bg-white w-[80%] py-4 px-6 rounded-2xl items-center border-4 border-[#2B6D69]">
             <Image
-              source={require("@/assets/images/mustache.png")}
+              source={
+                colorScheme === "dark"
+                  ? require("@/assets/images/mustache-white.png")
+                  : require("@/assets/images/mustache.png")
+              }
               className="w-[50px] h-[50px] mb-4"
               resizeMode="contain"
             />
