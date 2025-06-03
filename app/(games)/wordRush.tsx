@@ -1,6 +1,7 @@
 import wordDataRaw from "@/assets/data/filtered_words_dictionary.json";
 import WordRushButton from "@/components/page/games/wordRush/WordRushButton";
 import { wordRushRewardedAdId } from "@/constants/adIds";
+import { useColorScheme } from "@/hooks/useColorScheme";
 import { fetchWordList, shuffleArray } from "@/utils/wordRush/wordUtils";
 import { Ionicons } from "@expo/vector-icons";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -58,6 +59,7 @@ export default function WordRushScreen() {
   const router = useRouter();
   const { isLoaded, isEarnedReward, load, show, isClosed } =
     useRewardedAd(wordRushRewardedAdId);
+  const colorScheme = useColorScheme();
   const wordData: Record<string, number> = wordDataRaw as Record<
     string,
     number
@@ -250,7 +252,7 @@ export default function WordRushScreen() {
 
   return (
     <Animatable.View
-      className="flex-1 bg-[#FDF6E5]"
+      className="flex-1 bg-[#FDF6E5] dark:bg-mainBlack"
       animation={timer <= 0 && !isGameEnd ? "shake" : undefined}
       duration={400}
       iterationCount={1}
@@ -259,7 +261,7 @@ export default function WordRushScreen() {
       <View className="w-full h-[11%] items-center justify-end pb-1" />
       <View className="w-full h-[12%] justify-end items-center">
         {highScore !== null ? (
-          <Text className="text-center text-[18px] font-[Nunito] text-gray-500">
+          <Text className="text-center text-[18px] font-[Nunito] text-gray-500 dark:text-subGray">
             Best Streak: {highScore}
           </Text>
         ) : null}
@@ -271,7 +273,7 @@ export default function WordRushScreen() {
             </Text>
           </View>
         ) : (
-          <Text className="text-center text-[34px] font-[Nunito] font-bold text-black">
+          <Text className="text-center text-[34px] font-[Nunito] font-bold text-black dark:text-white">
             Streak: {streak}
           </Text>
         )}
@@ -283,7 +285,7 @@ export default function WordRushScreen() {
 
       <View className="w-full h-[30%] justify-start items-center pt-[10%]">
         {selectedIndexes.length === 0 ? (
-          <Text className="text-[30px] font-[Nunito] text-gray-400 ">
+          <Text className="text-[30px] font-[Nunito] text-gray-400 dark:text-subGray">
             Guess the word
           </Text>
         ) : (
@@ -307,6 +309,8 @@ export default function WordRushScreen() {
                       ? "text-red-600"
                       : feedbackAnim === "correct"
                       ? "text-green-600"
+                      : colorScheme === "dark"
+                      ? "text-white"
                       : "text-black"
                   }`}
                 >
@@ -380,7 +384,7 @@ export default function WordRushScreen() {
       <View className="w-full h-[8%] justify-start items-center">
         <Text
           onPress={() => setSelectedIndexes([])}
-          className="text-center text-[24px] text-underline font-[Nunito] font-medium text-gray-600"
+          className="text-center text-[24px] text-underline font-[Nunito] font-medium text-gray-600 dark:text-subGray"
         >
           clear
         </Text>

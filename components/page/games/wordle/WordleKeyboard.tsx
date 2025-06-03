@@ -48,7 +48,7 @@ export default function WordleKeyboard({ onKeyPress, keyStatus = {} }: Props) {
                   minWidth: key === "DEL" ? 50 : 35,
                   backgroundColor: bgColor,
                 }}
-                activeOpacity={0.9}
+                activeOpacity={0.8}
               >
                 <Text className="text-xl font-extrabold font-[Nunito] text-black ">
                   {key}

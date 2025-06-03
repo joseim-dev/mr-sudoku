@@ -411,7 +411,10 @@ export default function GameScreen() {
           </View>
 
           <View className="h-[10%]">
-            {/* <TouchableOpacity onPress={() => handleAutoComplete()}>
+            {/* <TouchableOpacity
+              onPress={() => handleAutoComplete()}
+              className="w-full h-[20px] bg-[#265D5A] rounded-2xl justify-center items-center"
+            >
               <Text>AutoComplete</Text>
             </TouchableOpacity> */}
             {isSmallDevice ? null : (

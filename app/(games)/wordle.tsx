@@ -56,6 +56,7 @@ export default function Wordle() {
           wordsPerString: 1,
         })[0].toUpperCase();
         setAnswer(randomWord);
+        console.log("New game started with answer:", randomWord);
       }
     };
     loadGame();
@@ -186,7 +187,7 @@ export default function Wordle() {
   };
 
   return (
-    <View className="w-full h-full bg-[#FDF5E5]">
+    <View className="w-full h-full bg-[#FDF5E5] dark:bg-mainBlack">
       <GameHeader
         onPress={async () => {
           const gameData = {
@@ -230,6 +231,7 @@ export default function Wordle() {
             <TouchableOpacity
               onPress={handleSubmit}
               className="h-[17%] bg-[#357A4A] w-[60%] rounded-2xl justify-center items-center"
+              activeOpacity={0.8} // 터치 시 시각적 피드백
             >
               <Text className="font-[Nunito] font-bold text-2xl text-white">
                 Submit
@@ -240,14 +242,14 @@ export default function Wordle() {
       </View>
 
       <Modal visible={modalVisible} transparent animationType="fade">
-        <View className="flex-1 bg-white/90 justify-center items-center">
-          <View className="bg-white w-[80%] py-4 px-6 rounded-2xl items-center border-4 border-[#2B6D69]">
+        <View className="flex-1 bg-white/90 justify-center items-center dark:bg-black/80">
+          <View className="bg-white w-[80%] py-4 px-6 rounded-2xl items-center border-4 border-[#2B6D69] dark:bg-mainBlack">
             <Image
               source={require("@/assets/images/mustache.png")}
               className="w-[50px] h-[50px] mb-4"
               resizeMode="contain"
             />
-            <Text className="text-[30px] font-extrabold text-[#1B3145] mb-2 font-[nunito]">
+            <Text className="text-[30px] font-extrabold text-[#1B3145] mb-2 font-[nunito] dark:text-white">
               {isCorrect ? "Mustache!" : "Game Over"}
             </Text>
 
