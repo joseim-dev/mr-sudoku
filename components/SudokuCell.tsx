@@ -21,7 +21,7 @@ type Props = {
 };
 
 const lightTheme = {
-  cellBackground: "#fff",
+  cellBackground: "#FCF7E7",
   selectedCell: "#CCEEC8",
   mistakeCell: "#fdd",
   cellText: "#000",
