@@ -2,7 +2,7 @@
   "expo": {
     "name": "Mustache",
     "slug": "mr-sudoku",
-    "version": "1.0.3",
+    "version": "1.0.4",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
     "scheme": "mrsudoku",
@@ -26,9 +26,7 @@
       "edgeToEdgeEnabled": true,
       "package": "com.mr.sudoku",
       "versionCode": 1,
-      "permissions": [
-        "com.google.android.gms.permission.AD_ID"
-      ]
+      "permissions": ["com.google.android.gms.permission.AD_ID"]
     },
     "web": {
       "bundler": "metro",
