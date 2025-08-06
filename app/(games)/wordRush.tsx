@@ -88,6 +88,10 @@ export default function WordRushScreen() {
   const [reductionInfo, setReductionInfo] = useState<string | null>(null);
   const { showStartAd, isStartAdLoaded } = useAd();
 
+  // 🔧 광고 표시 제어를 위한 ref 추가
+  const adShownRef = useRef(false);
+  const rewardHandledRef = useRef(false);
+
   // 타이머 계산 함수 (설정 객체 사용)
   const getTimerForWord = (wordLength: number, score: number) => {
     const config = STREAK_TIMER_CONFIG[wordLength] || {
@@ -112,8 +116,10 @@ export default function WordRushScreen() {
     load();
   }, [load]);
 
+  // 🔧 수정된 광고 표시 로직
   useEffect(() => {
-    if (isGameEnd && isStartAdLoaded) {
+    if (isGameEnd && isStartAdLoaded && !adShownRef.current) {
+      adShownRef.current = true; // 광고가 한 번 표시되었음을 마킹
       showStartAd();
     }
   }, [isGameEnd, isStartAdLoaded]);
@@ -128,7 +134,7 @@ export default function WordRushScreen() {
 
     // 타이머 계산
     const newTimer = getTimerForWord(word.length, streak);
-    setTimer(newTimer); // ✅ 하나만 남김
+    setTimer(newTimer);
 
     // ⭐ 여기에 추가하세요 ⭐
     const config = STREAK_TIMER_CONFIG[word.length];
@@ -157,18 +163,33 @@ export default function WordRushScreen() {
     // 힌트 초기화
     setHint(null);
     setShowHint(false);
-  }, [currentIndex, wordList]); // ✅ streak는 제거된 게 맞습니다
+  }, [currentIndex, wordList]);
 
   useEffect(() => {
     if (timer <= 0 && !isFinishTriggered) {
       Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
       saveHighScoreIfNeeded();
+
+      // ✅ 시간 초과 시 interstitial 광고 보여주기
+      if (isStartAdLoaded) {
+        showStartAd();
+      }
+
       setModalVisible(true);
+      setIsFinishTriggered(true); // 중복 방지
       return;
     }
-    intervalRef.current = setTimeout(() => setTimer((prev) => prev - 1), 1000);
+
+    // 타이머 감소
+    if (timer > 0) {
+      intervalRef.current = setTimeout(
+        () => setTimer((prev) => prev - 1),
+        1000
+      );
+    }
+
     return () => clearTimeout(intervalRef.current as unknown as number);
-  }, [timer]);
+  }, [timer, isStartAdLoaded]);
 
   useEffect(() => {
     if (wordList.length === 0 || scrambledLetters.length === 0) return;
@@ -221,6 +242,7 @@ export default function WordRushScreen() {
     return [letters.slice(0, midpoint), letters.slice(midpoint)];
   };
 
+  // 🔧 게임 재시작 시 광고 플래그 리셋
   const handleRestart = async () => {
     const words = await fetchWordList();
     setWordList(words);
@@ -230,16 +252,24 @@ export default function WordRushScreen() {
     setShowAnswer(false);
     setIsGameEnd(false);
     setIsFinishTriggered(false);
+    adShownRef.current = false; // 🔧 광고 플래그 리셋
   };
 
   useEffect(() => {
-    if (isEarnedReward && isClosed) {
+    if (isEarnedReward && isClosed && !rewardHandledRef.current) {
+      rewardHandledRef.current = true; // ✅ 중복 방지
+
       setModalVisible(false);
       setTimer(getTimerForWord(currentWord.length, streak));
       setShowAnswer(false);
-      load();
+
+      // 다음 광고 미리 로딩 (조금 딜레이 주는 것도 안정적)
+      setTimeout(() => {
+        load();
+        rewardHandledRef.current = false; // ✅ 다음 광고에 다시 허용
+      }, 500);
     }
-  }, [isClosed, isEarnedReward]); // streak dependency 제거
+  }, [isClosed, isEarnedReward]);
 
   const handleOneMoreChance = async () => {
     if (isLoaded) {
@@ -251,11 +281,21 @@ export default function WordRushScreen() {
     }
   };
 
+  // 🔧 Finish 버튼 핸들러 수정
   const handleFinishGame = () => {
     setIsGameEnd(true);
     setIsFinishTriggered(true);
     saveHighScoreIfNeeded();
     setModalVisible(true);
+    // 🔧 광고 플래그는 여기서 설정하지 않음 (useEffect에서 처리)
+  };
+
+  // 🔧 홈으로 가기 핸들러 수정
+  const handleGoHome = () => {
+    router.push("/(tabs)");
+    setModalVisible(false);
+    setShowAnswer(false);
+    adShownRef.current = false; // 🔧 광고 플래그 리셋
   };
 
   return (
@@ -465,14 +505,7 @@ export default function WordRushScreen() {
               </>
             )}
 
-            <TouchableOpacity
-              onPress={() => {
-                router.push("/(tabs)");
-                setModalVisible(false);
-                setShowAnswer(false);
-              }}
-              className="mb-4 mt-3"
-            >
+            <TouchableOpacity onPress={handleGoHome} className="mb-4 mt-3">
               <Ionicons name="home" size={22} color="#2B6D69" />
             </TouchableOpacity>
           </View>
