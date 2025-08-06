@@ -1,43 +1,20 @@
-import { useAd } from "@/contexts/AdContext/AdContext";
-import { isAdsRemoved } from "@/utils/SecureStore/adsRemovedStore";
 import { Ionicons } from "@expo/vector-icons";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useFocusEffect } from "@react-navigation/native";
 import { useRouter } from "expo-router";
-import React, { useCallback, useEffect } from "react";
+import React, { useCallback } from "react";
 import { Alert, Text, TouchableOpacity, View } from "react-native";
 
 export default function WordleLobby() {
   const router = useRouter();
-
-  const { showStartAd, isStartAdLoaded, isStartAdClosed } = useAd();
   const [isSavedGame, setIsSavedGame] = React.useState(false);
-
-  const handleStart = async () => {
-    const adsRemoved = await isAdsRemoved(); // ✅ 추가
-    if (isStartAdLoaded && !adsRemoved) {
-      showStartAd();
-    } else {
-      router.push("/(games)/wordle");
-    }
-  };
-
-  useEffect(() => {
-    if (isStartAdClosed) {
-      router.push("/(games)/wordle");
-    }
-  }, [isStartAdClosed]);
 
   useFocusEffect(
     useCallback(() => {
       const checkSavedGame = async () => {
         try {
           const savedGame = await AsyncStorage.getItem("wordleSavedGame");
-          if (savedGame) {
-            setIsSavedGame(true);
-          } else {
-            setIsSavedGame(false); // 없을 경우 초기화도 필요하다면
-          }
+          setIsSavedGame(!!savedGame);
         } catch (e) {
           Alert.alert(
             "Error occurred while checking saved game",
@@ -45,27 +22,24 @@ export default function WordleLobby() {
           );
         }
       };
-
       checkSavedGame();
     }, [])
   );
 
+  const handleStart = () => {
+    router.push("/(games)/wordle");
+  };
+
   const handleNewGame = async () => {
-    const adsRemoved = await isAdsRemoved(); // ✅ 추가
     try {
       await AsyncStorage.removeItem("wordleSavedGame");
     } catch (e) {
       Alert.alert(
         "Error occurred while generating new game",
-        "Please try again. "
+        "Please try again."
       );
     }
-
-    if (isStartAdLoaded && !adsRemoved) {
-      showStartAd();
-    } else {
-      router.push("/(games)/wordle");
-    }
+    router.push("/(games)/wordle");
   };
 
   return (
@@ -93,13 +67,13 @@ export default function WordleLobby() {
         </Text>
       </View>
 
-      {/* 글자 수 선택 버튼 */}
+      {/* 버튼 */}
       <View className="w-full h-[59%] flex items-center py-8">
         {isSavedGame && (
           <TouchableOpacity
             className="w-[50%] h-[56px] border-[2px] border-[#C5723F] rounded-full flex justify-center items-center mb-5"
             activeOpacity={0.85}
-            onPress={() => handleStart()}
+            onPress={handleStart}
           >
             <Text className="text-[20px] font-[nunito] font-bold text-white">
               Continue Game
@@ -118,7 +92,6 @@ export default function WordleLobby() {
         </TouchableOpacity>
       </View>
 
-      {/* 하단 여백 */}
       <View className="w-full h-[10%]" />
     </View>
   );

@@ -21,6 +21,7 @@ import SudokuButton from "@/components/page/games/sudoku/SudokuButton";
 import SudokuToolBar from "@/components/page/games/sudoku/SudokuToolBar";
 import SudokuBoard from "@/components/SudokuBoard";
 import { sudokuRewardedAdId } from "@/constants/adIds";
+import { useAd } from "@/contexts/AdContext/AdContext";
 import { useColorScheme } from "@/hooks/useColorScheme";
 import { generatePuzzle, Grid, solveSudoku } from "@/lib/sudoku";
 import { calculateReward } from "@/utils/game/reward";
@@ -34,6 +35,7 @@ export default function GameScreen() {
   const { height } = useWindowDimensions();
   const colorScheme = useColorScheme();
   const isSmallDevice = height < 700;
+  const { showStartAd, isStartAdLoaded, isStartAdClosed } = useAd();
 
   const router = useRouter();
   const [showRewardModal, setShowRewardModal] = useState(false);
@@ -89,6 +91,13 @@ export default function GameScreen() {
   useEffect(() => {
     load();
   }, [load]);
+
+  useEffect(() => {
+    if (isStartAdClosed && rewardResult) {
+      rewardUser(rewardResult.exp, rewardResult.coins);
+      setShowRewardModal(true);
+    }
+  }, [isStartAdClosed]);
 
   useEffect(() => {
     if (grid.length > 0) {
@@ -267,6 +276,7 @@ export default function GameScreen() {
       console.log("not finished");
       return;
     }
+
     setShowConfetti(true);
     await AsyncStorage.removeItem("sudokuSavedGame");
 
@@ -276,10 +286,18 @@ export default function GameScreen() {
     );
     setRewardResult({ coins, exp });
 
-    posthog.capture("Game Finished(No Ad)");
+    const adsRemoved = await isAdsRemoved();
 
-    await rewardUser(exp, coins);
-    setShowRewardModal(true);
+    if (isStartAdLoaded && !adsRemoved) {
+      // ✅ 전면 광고 (useAd 기반)
+      showStartAd();
+      posthog.capture("Game Finished (Interstitial Ad)");
+    } else {
+      // 광고 비활성화 시 즉시 보상
+      await rewardUser(exp, coins);
+      setShowRewardModal(true);
+      posthog.capture("Game Finished (No Ad)");
+    }
 
     setTimeout(() => setShowConfetti(false), 4000);
   };

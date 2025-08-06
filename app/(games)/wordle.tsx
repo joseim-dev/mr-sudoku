@@ -3,11 +3,14 @@ import WordleBoard from "@/components/page/games/wordle/WordleBoard";
 import WordleKeyboard from "@/components/page/games/wordle/WordleKeyboard";
 import WordleKeyboardSmallDevice from "@/components/page/games/wordle/WordleKeyboardSmallDevice";
 import GameHeader from "@/components/ui/GameHeader";
+import { useAd } from "@/contexts/AdContext/AdContext";
+import { isAdsRemoved } from "@/utils/SecureStore/adsRemovedStore";
 import { Ionicons } from "@expo/vector-icons";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useRouter } from "expo-router";
 import { generate } from "random-words";
 import React, { useEffect, useState } from "react";
+
 import {
   Alert,
   Dimensions,
@@ -40,6 +43,7 @@ export default function Wordle() {
   const screenWidth = Dimensions.get("window").width;
   const isSmallDevice = screenWidth < 390;
   const colorScheme = useColorScheme();
+  const { isStartAdLoaded, isStartAdClosed, showStartAd } = useAd();
 
   useEffect(() => {
     const loadGame = async () => {
@@ -78,6 +82,11 @@ export default function Wordle() {
     };
     if (!isGameEnd) saveGame();
   }, [guesses, currentGuess, colors, keyStatus]);
+  useEffect(() => {
+    if (isStartAdClosed && isGameEnd && !modalVisible) {
+      setModalVisible(true);
+    }
+  }, [isStartAdClosed]);
 
   const evaluateGuess = (guess: string, answer: string): LetterStatus[] => {
     const result: LetterStatus[] = Array(5).fill("absent");
@@ -141,7 +150,7 @@ export default function Wordle() {
 
   const MAX_TURNS = 6;
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     if (currentGuess.length === 5) {
       if (!wordData[currentGuess.toLowerCase()]) {
         Alert.alert("Not in word list", "Please type a valid word");
@@ -161,11 +170,14 @@ export default function Wordle() {
       if (didWin || didFail) {
         setIsCorrect(didWin);
         setIsGameEnd(true);
-        setModalVisible(true);
-        // 저장된 게임 삭제
-        AsyncStorage.removeItem("wordleSavedGame").catch((e) =>
-          console.error("Failed to remove saved game:", e)
-        );
+        await AsyncStorage.removeItem("wordleSavedGame");
+
+        const adsRemoved = await isAdsRemoved();
+        if (!adsRemoved && isStartAdLoaded) {
+          showStartAd(); // ✅ 광고 시청
+        } else {
+          setModalVisible(true); // ✅ 광고 제거 상태면 바로 모달
+        }
       }
 
       setCurrentGuess("");

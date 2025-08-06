@@ -1,34 +1,17 @@
-import { useAd } from "@/contexts/AdContext/AdContext";
-import { isAdsRemoved } from "@/utils/SecureStore/adsRemovedStore";
 import { Ionicons } from "@expo/vector-icons";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useRouter } from "expo-router";
-import React, { useEffect } from "react";
+import React from "react";
 import { Text, TouchableOpacity, View } from "react-native";
 
 export default function WordRushLobby() {
   const router = useRouter();
-
   const letterOptions = [4, 5, 6, 7, 8];
-  const { showStartAd, isStartAdLoaded, isStartAdClosed, startAdError } =
-    useAd();
 
   const handleSelectLetterCount = async (count: number) => {
     await AsyncStorage.setItem("wordRushLetterCount", count.toString());
-    const adsRemoved = await isAdsRemoved(); // ✅ 추가
-
-    if (isStartAdLoaded && !adsRemoved) {
-      showStartAd();
-    } else {
-      router.push("/(games)/wordRush");
-    }
+    router.push("/(games)/wordRush");
   };
-
-  useEffect(() => {
-    if (isStartAdClosed) {
-      router.push("/(games)/wordRush");
-    }
-  }, [isStartAdClosed]);
 
   return (
     <View className="w-full h-full bg-[#1B3145] flex-1">

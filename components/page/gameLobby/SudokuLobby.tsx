@@ -1,17 +1,12 @@
-import { useAd } from "@/contexts/AdContext/AdContext";
-import { isAdsRemoved } from "@/utils/SecureStore/adsRemovedStore";
 import { Ionicons } from "@expo/vector-icons";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useFocusEffect } from "@react-navigation/native";
 import { useRouter } from "expo-router";
-import React, { useCallback, useEffect } from "react";
-
+import React, { useCallback } from "react";
 import { ScrollView, Text, TouchableOpacity, View } from "react-native";
 
 export default function SudokuLobby() {
   const router = useRouter();
-  const { showStartAd, isStartAdLoaded, isStartAdClosed, startAdError } =
-    useAd();
   const [isSavedGame, setIsSavedGame] = React.useState(false);
 
   useFocusEffect(
@@ -20,7 +15,6 @@ export default function SudokuLobby() {
         const saved = await AsyncStorage.getItem("sudokuSavedGame");
         setIsSavedGame(!!saved);
       };
-
       checkSavedGame();
     }, [])
   );
@@ -37,12 +31,7 @@ export default function SudokuLobby() {
   const handleContinueGame = async () => {
     const savedGame = await AsyncStorage.getItem("sudokuSavedGame");
     if (savedGame) {
-      const removed = await isAdsRemoved(); // ✅ await로 결과 받아오기
-      if (isStartAdLoaded && !removed) {
-        showStartAd();
-      } else {
-        router.push("/(games)/sudoku");
-      }
+      router.push("/(games)/sudoku");
     }
   };
 
@@ -58,20 +47,8 @@ export default function SudokuLobby() {
     ]);
     await AsyncStorage.setItem("sudokuDifficulty", base);
     await AsyncStorage.setItem("sudokuDifficultyLabel", key);
-
-    const removed = await isAdsRemoved(); // ✅ 추가
-    if (isStartAdLoaded && !removed) {
-      showStartAd();
-    } else {
-      router.push("/(games)/sudoku");
-    }
+    router.push("/(games)/sudoku");
   };
-
-  useEffect(() => {
-    if (isStartAdClosed) {
-      router.push("/(games)/sudoku");
-    }
-  }, [isStartAdClosed]);
 
   return (
     <View className="w-full h-full bg-[#1B4529]">
@@ -103,11 +80,9 @@ export default function SudokuLobby() {
         >
           {isSavedGame && (
             <TouchableOpacity
-              className="w-[50%] h-[56px] border-[2px] border-[#5FB085] ] rounded-full flex justify-center items-center mb-5"
+              className="w-[50%] h-[56px] border-[2px] border-[#5FB085] rounded-full flex justify-center items-center mb-5"
               activeOpacity={0.85}
-              onPress={() => {
-                handleContinueGame();
-              }}
+              onPress={handleContinueGame}
             >
               <Text className="text-[20px] font-[nunito] font-bold text-white capitalize">
                 Continue
@@ -128,7 +103,6 @@ export default function SudokuLobby() {
           ))}
         </ScrollView>
       </View>
-      {/* 하단 여백 */}
     </View>
   );
 }

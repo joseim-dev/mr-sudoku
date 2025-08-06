@@ -1,6 +1,7 @@
 import wordDataRaw from "@/assets/data/filtered_words_dictionary.json";
 import WordRushButton from "@/components/page/games/wordRush/WordRushButton";
 import { wordRushRewardedAdId } from "@/constants/adIds";
+import { useAd } from "@/contexts/AdContext/AdContext";
 import { useColorScheme } from "@/hooks/useColorScheme";
 import { fetchWordList, shuffleArray } from "@/utils/wordRush/wordUtils";
 import { Ionicons } from "@expo/vector-icons";
@@ -85,6 +86,7 @@ export default function WordRushScreen() {
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
   const [hint, setHint] = useState<string | null>(null);
   const [reductionInfo, setReductionInfo] = useState<string | null>(null);
+  const { showStartAd, isStartAdLoaded } = useAd();
 
   // 타이머 계산 함수 (설정 객체 사용)
   const getTimerForWord = (wordLength: number, score: number) => {
@@ -109,6 +111,12 @@ export default function WordRushScreen() {
     });
     load();
   }, [load]);
+
+  useEffect(() => {
+    if (isGameEnd && isStartAdLoaded) {
+      showStartAd();
+    }
+  }, [isGameEnd, isStartAdLoaded]);
 
   useEffect(() => {
     if (wordList.length === 0) return;
