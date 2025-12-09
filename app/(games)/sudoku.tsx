@@ -9,6 +9,8 @@ import {
   ActivityIndicator,
   Alert,
   Image,
+  Text,
+  TouchableOpacity,
   useWindowDimensions,
   View,
 } from "react-native";
@@ -446,12 +448,12 @@ export default function GameScreen() {
           </View>
 
           <View className="h-[10%]">
-            {/* <TouchableOpacity
+            <TouchableOpacity
               onPress={() => handleAutoComplete()}
               className="w-full h-[20px] bg-[#265D5A] rounded-2xl justify-center items-center"
             >
               <Text>AutoComplete</Text>
-            </TouchableOpacity> */}
+            </TouchableOpacity>
             {isSmallDevice ? null : (
               <SudokuButton
                 isSmallDevice={isSmallDevice}
@@ -477,7 +479,8 @@ export default function GameScreen() {
       )}
 
       <RewardModal
-        visible={showRewardModal}
+        // visible={showRewardModal}
+        visible={false}
         exp={rewardResult?.exp || 0}
         coins={rewardResult?.coins || 0}
         onClose={() => {
